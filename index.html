@@ -2,107 +2,366 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Mon Gmail Clone</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web WhatsApp Clone</title>
     <style>
-        /* CSS : Le "Look" Gmail */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; height: 100vh; background: #f6f8fc; }
+        /* Réinitialisation de base */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Helvetica, Arial, sans-serif; }
         
-        /* Barre Latérale */
-        .sidebar { width: 250px; padding: 20px; background: #f6f8fc; }
-        .btn-compose { background: #c2e7ff; padding: 15px 25px; border-radius: 16px; border: none; cursor: pointer; font-weight: bold; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .btn-compose:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-        
-        /* Liste des Emails */
-        .main { flex-grow: 1; background: white; margin: 8px; border-radius: 16px; overflow-y: auto; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .email-item { display: flex; align-items: center; padding: 10px 20px; border-bottom: 1px solid #f1f1f1; cursor: pointer; font-size: 0.9em; }
-        .email-item:hover { box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0, 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15); z-index: 1; }
-        .sender { width: 200px; font-weight: bold; }
-        .subject { flex-grow: 1; color: #5f6368; }
-        .unread { font-weight: bold; background: #fff; }
+        /* Arrière-plan global */
+        body { 
+            background-color: #d1d7db; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+        }
 
-        /* Fenêtre de rédaction (Cachée par défaut) */
-        #compose-box { position: fixed; bottom: 0; right: 50px; width: 500px; background: white; border-radius: 10px 10px 0 0; box-shadow: 0 8px 10px 1px rgba(0,0,0,0.14); display: none; flex-direction: column; border: 1px solid #ccc; }
-        .header-box { background: #f2f6fc; padding: 10px; font-weight: bold; border-radius: 10px 10px 0 0; display: flex; justify-content: space-between; }
-        input, textarea { border: none; padding: 10px; border-bottom: 1px solid #f1f1f1; outline: none; }
-        textarea { height: 200px; resize: none; }
-        .send-btn { background: #0b57d0; color: white; border: none; padding: 10px 20px; border-radius: 20px; margin: 10px; cursor: pointer; align-self: flex-start; }
+        /* Conteneur principal de l'application */
+        .app-container { 
+            display: flex; 
+            width: 95%; 
+            max-width: 1400px; 
+            height: 95vh; 
+            background: white; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+        }
+
+        /* --- PANNEAU DE GAUCHE (Contacts) --- */
+        .sidebar { 
+            width: 30%; 
+            border-right: 1px solid #ddd; 
+            display: flex; 
+            flex-direction: column; 
+            background: #fff; 
+        }
+        
+        .sidebar-header { 
+            background: #f0f2f5; 
+            height: 60px; 
+            display: flex; 
+            align-items: center; 
+            padding: 0 15px; 
+            font-weight: 600; 
+            color: #41525d;
+            border-bottom: 1px solid #ddd; 
+        }
+
+        .contact-list { 
+            overflow-y: auto; 
+            flex: 1; 
+        }
+
+        .contact-item { 
+            padding: 12px 15px; 
+            border-bottom: 1px solid #f2f2f2; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            transition: background 0.2s;
+        }
+
+        .contact-item:hover { background: #f5f6f6; }
+        .contact-item.active { background: #ebebeb; }
+
+        .avatar { 
+            width: 45px; 
+            height: 45px; 
+            border-radius: 50%; 
+            background: #dfe5e7; 
+            margin-right: 15px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .contact-info { display: flex; flex-direction: column; }
+        .contact-name { font-size: 16px; color: #111b21; }
+
+        /* --- PANNEAU DE DROITE (Chat) --- */
+        .chat-area { 
+            width: 70%; 
+            display: flex; 
+            flex-direction: column; 
+            background: #efeae2; 
+            position: relative;
+        }
+
+        /* Motif d'arrière plan typique de WhatsApp */
+        .chat-area::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url('https://web.whatsapp.com/img/bg-chat-tile-dark_a4be512e7195b6b733d9110b408f075d.png');
+            opacity: 0.06;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .chat-header { 
+            background: #f0f2f5; 
+            height: 60px; 
+            display: flex; 
+            align-items: center; 
+            padding: 0 15px; 
+            font-weight: 600; 
+            border-bottom: 1px solid #ddd; 
+            z-index: 1;
+        }
+
+        .messages-container { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            z-index: 1;
+        }
+
+        /* Bulles de message */
+        .msg-bubble { 
+            max-width: 65%; 
+            padding: 8px 10px; 
+            margin-bottom: 12px; 
+            border-radius: 7.5px; 
+            font-size: 14px; 
+            line-height: 19px;
+            box-shadow: 0 1px 0.5px rgba(11,20,26,.13);
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .msg-sent { 
+            background: #dcf8c6; 
+            align-self: flex-end; 
+            border-top-right-radius: 0; 
+        }
+
+        .msg-received { 
+            background: #ffffff; 
+            align-self: flex-start; 
+            border-top-left-radius: 0; 
+        }
+        
+        /* --- ZONE DE SAISIE --- */
+        .input-area { 
+            background: #f0f2f5; 
+            padding: 10px 15px; 
+            display: flex; 
+            align-items: center; 
+            z-index: 1;
+        }
+
+        .input-area input { 
+            flex: 1; 
+            padding: 15px 20px; 
+            border: none; 
+            border-radius: 8px; 
+            outline: none; 
+            font-size: 15px; 
+            background: #fff;
+        }
+
+        .input-area button { 
+            margin-left: 15px; 
+            padding: 12px 20px; 
+            border: none; 
+            background: #00a884; 
+            color: white; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: background 0.2s;
+        }
+
+        .input-area button:hover { background: #008f6f; }
+        .input-area button:disabled { background: #cccccc; cursor: not-allowed; }
     </style>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <button class="btn-compose" onclick="toggleCompose()">+ Nouveau message</button>
-        <div style="color: #0b57d0; font-weight: bold;">Boîte de réception</div>
-    </aside>
-
-    <main class="main" id="email-list">
-        <div class="email-item">Chargement des messages...</div>
-    </main>
-
-    <div id="compose-box">
-        <div class="header-box">Nouveau message <span onclick="toggleCompose()" style="cursor:pointer">×</span></div>
-        <input type="email" id="to" placeholder="Destinataire">
-        <input type="text" id="subject" placeholder="Objet">
-        <textarea id="body"></textarea>
-        <button class="send-btn" id="send-btn">Envoyer</button>
+<div class="app-container">
+    <div class="sidebar">
+        <div class="sidebar-header">Mes Contacts</div>
+        <div class="contact-list" id="contact-list">
+            </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <div class="chat-area">
+        <div class="chat-header" id="chat-header">
+            Sélectionnez un contact pour démarrer une discussion
+        </div>
+        
+        <div class="messages-container" id="messages-container">
+            </div>
+        
+        <div class="input-area">
+            <input type="text" id="message-input" placeholder="Tapez un message" disabled>
+            <button id="send-btn" disabled>Envoyer</button>
+        </div>
+    </div>
+</div>
 
-        // 1. CONFIGURATION FIREBASE (À remplir avec tes infos)
-        const firebaseConfig = {
-            apiKey: "846140280738",
-            authDomain: "messagerie.firebaseapp.com",
-            projectId: "messagerie-cd2ba",
-            storageBucket: "messagerie.appspot.com",
-            messagingSenderId: "messagerie-cd2ba",
-            appId: "messagerie-cd2ba"
-        };
+<script>
+    // ==========================================
+    // 1. CONFIGURATION FIREBASE
+    // ==========================================
+    const firebaseConfig = {
+        apiKey: "846140280738", // 🛑 OBLIGATOIRE : Trouve-la dans les paramètres de ton projet Firebase
+        authDomain: "messagerie-cd2ba.firebaseapp.com",
+        databaseURL: "https://messagerie-cd2ba-default-rtdb.europe-west1.firebasedatabase.app/",
+        projectId: "messagerie-cd2ba",
+        storageBucket: "messagerie-cd2ba.appspot.com",
+        messagingSenderId: "846140280738",
+        appId: "messagerie-cd2ba" // 🛑 Copie également l'App ID depuis tes paramètres
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    // Initialiser Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-        // 2. ENVOYER UN EMAIL
-        document.getElementById('send-btn').onclick = async () => {
-            const email = {
-                to: document.getElementById('to').value,
-                subject: document.getElementById('subject').value,
-                body: document.getElementById('body').value,
-                timestamp: serverTimestamp()
-            };
+    // ==========================================
+    // 2. DONNÉES UTILISATEUR & CONTACTS
+    // ==========================================
+    const currentUser = "moi_utilisateur_1"; // ID fictif de l'utilisateur qui regarde l'écran
+    let currentContactId = null;
+    let activeChatListener = null;
 
-            try {
-                await addDoc(collection(db, "emails"), email);
-                toggleCompose(); // Fermer la boîte
-                alert("Message envoyé !");
-            } catch (e) { console.error("Erreur : ", e); }
-        };
+    // Liste statique de contacts pour l'exemple
+    const contacts = [
+        { id: "contact_2", name: "Alice Dupont", color: "#3498db" },
+        { id: "contact_3", name: "Marc Zuckerberg", color: "#e74c3c" },
+        { id: "contact_4", name: "Sophie Martin", color: "#2ecc71" }
+    ];
 
-        // 3. LIRE LES EMAILS (Temps réel)
-        const q = query(collection(db, "emails"), orderBy("timestamp", "desc"));
-        onSnapshot(q, (snapshot) => {
-            const list = document.getElementById('email-list');
-            list.innerHTML = '';
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                list.innerHTML += `
-                    <div class="email-item">
-                        <div class="sender">${data.to}</div>
-                        <div class="subject">${data.subject} - <span style="font-weight:normal">${data.body.substring(0, 50)}...</span></div>
-                    </div>
-                `;
-            });
+    // Récupération des éléments du DOM
+    const contactListEl = document.getElementById('contact-list');
+    const chatHeaderEl = document.getElementById('chat-header');
+    const messagesContainer = document.getElementById('messages-container');
+    const messageInput = document.getElementById('message-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    // ==========================================
+    // 3. LOGIQUE D'AFFICHAGE
+    // ==========================================
+
+    // Générer la liste de contacts à gauche
+    function initContacts() {
+        contacts.forEach(contact => {
+            const div = document.createElement('div');
+            div.className = 'contact-item';
+            
+            // Création d'un faux avatar avec l'initiale
+            const initiale = contact.name.charAt(0).toUpperCase();
+            
+            div.innerHTML = `
+                <div class="avatar" style="background-color: ${contact.color}">${initiale}</div>
+                <div class="contact-info">
+                    <span class="contact-name">${contact.name}</span>
+                </div>
+            `;
+            
+            // Au clic, ouvrir le chat
+            div.onclick = () => openChat(contact, div);
+            contactListEl.appendChild(div);
         });
-    </script>
+    }
 
-    <script>
-        // Logique UI simple
-        function toggleCompose() {
-            const box = document.getElementById('compose-box');
-            box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
+    // Ouvrir une conversation
+    function openChat(contact, htmlElement) {
+        currentContactId = contact.id;
+        
+        // Mettre à jour l'en-tête
+        chatHeaderEl.innerHTML = `
+            <div class="avatar" style="background-color: ${contact.color}; width: 35px; height: 35px;">${contact.name.charAt(0)}</div>
+            ${contact.name}
+        `;
+
+        // Gérer le surlignage du contact actif
+        document.querySelectorAll('.contact-item').forEach(el => el.classList.remove('active'));
+        htmlElement.classList.add('active');
+
+        // Activer la zone de texte
+        messageInput.disabled = false;
+        sendBtn.disabled = false;
+        messageInput.focus();
+
+        // Vider la fenêtre de chat
+        messagesContainer.innerHTML = '';
+
+        // Charger les messages depuis Firebase
+        listenToMessages();
+    }
+
+    // ==========================================
+    // 4. LOGIQUE FIREBASE (Écoute et Envoi)
+    // ==========================================
+
+    // Écouter les messages en temps réel
+    function listenToMessages() {
+        // Créer un ID de conversation unique entre Moi et le Contact
+        // En triant par ordre alphabétique, on garantit que l'ID de "A vers B" est le même que "B vers A"
+        const chatId = [currentUser, currentContactId].sort().join('_');
+        
+        // Retirer l'ancien écouteur si on change de contact
+        if (activeChatListener) {
+            db.ref('chats/' + activeChatListener).off();
         }
-    </script>
+        
+        activeChatListener = chatId;
+
+        // Écouter chaque nouveau message ajouté dans la base de données
+        db.ref('chats/' + chatId).on('child_added', (snapshot) => {
+            const message = snapshot.val();
+            displayMessage(message.text, message.senderId === currentUser);
+        });
+    }
+
+    // Afficher un message dans le HTML
+    function displayMessage(text, isSentByMe) {
+        const bubble = document.createElement('div');
+        bubble.className = `msg-bubble ${isSentByMe ? 'msg-sent' : 'msg-received'}`;
+        bubble.textContent = text;
+        
+        messagesContainer.appendChild(bubble);
+        
+        // Scroll automatique vers le bas
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Envoyer un message dans la base de données
+    function sendMessage() {
+        const text = messageInput.value.trim();
+        if (text === '' || !currentContactId) return;
+
+        const chatId = [currentUser, currentContactId].sort().join('_');
+
+        // Pousser le message sur Firebase Realtime Database
+        db.ref('chats/' + chatId).push({
+            text: text,
+            senderId: currentUser,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+
+        // Vider l'input
+        messageInput.value = '';
+        messageInput.focus();
+    }
+
+    // Lier le bouton et la touche "Entrée"
+    sendBtn.onclick = sendMessage;
+    messageInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    // Démarrer l'application
+    initContacts();
+
+</script>
 </body>
 </html>
