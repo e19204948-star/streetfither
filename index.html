@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FireChat</title>
-    
+    <title>FireChat - Groupes</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    
     <style>
         :root {
             --primary: #00a884;
@@ -21,119 +19,56 @@
             --msg-received: #ffffff;
             --online: #1fa33a;
             --offline: #8696a0;
+            --group-color: #53bdeb;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(180deg, var(--primary) 127px, var(--bg-body) 127px); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
 
-        body { 
-            background: linear-gradient(180deg, var(--primary) 127px, var(--bg-body) 127px); 
-            display: flex; justify-content: center; align-items: center; 
-            height: 100vh; overflow: hidden; 
-        }
+        /* ÉCRAN CONNEXION */
+        .login-screen { position: fixed; inset: 0; background: var(--primary); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .login-box { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; }
 
-        /* --- ÉCRAN DE CONNEXION --- */
-        .login-screen {
-            position: fixed; inset: 0; background: var(--primary);
-            display: flex; justify-content: center; align-items: center; z-index: 1000;
-        }
-        .login-box {
-            background: white; padding: 30px; border-radius: 20px;
-            width: 90%; max-width: 400px; text-align: center;
-        }
-
-        /* --- STRUCTURE PRINCIPALE --- */
-        .app-container { 
-            display: none; width: 95%; max-width: 1400px; height: 95vh; 
-            background: var(--bg-app); border-radius: 10px; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
+        /* APP STRUCTURE */
+        .app-container { display: none; width: 95%; max-width: 1400px; height: 95vh; background: var(--bg-app); border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .sidebar { width: 30%; min-width: 300px; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
         .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-chat); position: relative; }
+        .header { height: 60px; background: var(--bg-header); display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid #ddd; z-index: 10; gap: 10px; }
 
-        .header { 
-            height: 60px; background: var(--bg-header); display: flex; 
-            align-items: center; padding: 0 15px; border-bottom: 1px solid #ddd; z-index: 10;
-        }
-
-        /* --- CONTACTS & AVATARS --- */
+        /* CONTACTS & GROUPES */
         .contact-list { flex: 1; overflow-y: auto; }
         .contact-item { padding: 12px; border-bottom: 1px solid #f2f2f2; cursor: pointer; display: flex; align-items: center; gap: 12px; }
         .contact-item:hover { background: #f9f9f9; }
         .contact-item.active { background: #ebebeb; }
+        .contact-item.is-group .avatar { border-radius: 10px; background: var(--group-color) !important; }
 
         .avatar-wrapper { position: relative; }
-        .avatar { width: 45px; height: 45px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .status-dot { 
-            position: absolute; bottom: 2px; right: 2px; 
-            width: 12px; height: 12px; border-radius: 50%; 
-            border: 2px solid white; background: var(--offline); 
-        }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; text-transform: uppercase; }
+        .status-dot { position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; background: var(--offline); }
         .status-dot.online { background: var(--online); }
 
-        /* --- ZONE DE MESSAGES --- */
-        .messages-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; z-index: 5; }
-        .msg-bubble { 
-            max-width: 75%; padding: 8px 12px; margin-bottom: 5px; border-radius: 10px; 
-            font-size: 14px; position: relative; word-wrap: break-word;
-        }
+        /* MESSAGES */
+        .messages-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; }
+        .msg-bubble { max-width: 75%; padding: 8px 12px; margin-bottom: 5px; border-radius: 10px; font-size: 14px; position: relative; word-wrap: break-word; }
+        .sender-name { font-size: 11px; font-weight: bold; margin-bottom: 2px; display: block; color: var(--primary-dark); }
         .msg-sent { background: var(--msg-sent); align-self: flex-end; }
         .msg-received { background: var(--msg-received); align-self: flex-start; }
 
         .input-area { padding: 10px; background: var(--bg-header); display: flex; gap: 10px; align-items: center; }
-        .input-area input { flex: 1; padding: 12px; border: none; border-radius: 20px; outline: none; height: 40px; }
+        .input-area input { flex: 1; padding: 12px; border: none; border-radius: 20px; outline: none; height: 40px; font-size: 16px; }
         .input-area button { background: var(--primary); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; }
 
-        .back-btn { display: none; margin-right: 10px; cursor: pointer; }
+        .btn-add-group { background: var(--primary); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
 
-        /* --- RESPONSIVE MOBILE (FUSIONNÉ) --- */
         @media (max-width: 768px) {
-            .app-container { 
-                width: 100%; 
-                height: 100vh; 
-                height: -webkit-fill-available; /* Bug Safari iOS */
-                border-radius: 0; 
-                display: none; /* Changé dynamiquement par JS */
-            }
-            
+            .app-container { width: 100%; height: 100vh; border-radius: 0; }
             .sidebar { width: 100%; display: flex; }
-            
-            .chat-area { 
-                display: none; /* Caché par défaut sur mobile */
-                width: 100%; 
-                height: 100%;
-                flex-direction: column;
-            }
-
+            .chat-area { display: none; width: 100%; }
             .app-container.chat-active .sidebar { display: none; }
-            
-            .app-container.chat-active .chat-area { 
-                display: flex; 
-                position: fixed;
-                inset: 0;
-                z-index: 999;
-            }
-
+            .app-container.chat-active .chat-area { display: flex; position: fixed; inset: 0; }
             .back-btn { display: block; }
-
-            .messages-container {
-                flex: 1; 
-                overflow-y: auto;
-                padding: 10px;
-            }
-
-            .input-area {
-                padding: 10px;
-                background: #f0f2f5;
-                border-top: 1px solid #ddd;
-                /* Sécurité pour les barres de navigation (iPhone/Android) */
-                padding-bottom: max(10px, env(safe-area-inset-bottom));
-            }
-
-            .input-area input {
-                font-size: 16px; /* Empêche le zoom auto iOS */
-            }
         }
+        .back-btn { display: none; cursor: pointer; }
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -144,16 +79,17 @@
 <div class="login-screen" id="login-screen">
     <div class="login-box">
         <h2 style="margin-bottom:15px">FireChat</h2>
-        <input type="text" id="username-input" placeholder="Ton prénom..." style="width:100%; padding:12px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd">
-        <button id="login-btn" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px; font-weight:bold">Entrer</button>
+        <input type="text" id="username-input" placeholder="Ton prénom...">
+        <button id="login-btn" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px; font-weight:bold; margin-top:10px">Entrer</button>
     </div>
 </div>
 
 <div class="app-container" id="app-container">
     <div class="sidebar">
         <div class="header">
-            <strong id="my-name">Chargement...</strong>
-            <button onclick="logout()" style="margin-left:auto; border:none; background:none; color:red; cursor:pointer; font-size:12px">Quitter</button>
+            <strong id="my-name">...</strong>
+            <button class="btn-add-group" onclick="createNewGroup()">+ Groupe</button>
+            <button onclick="logout()" style="margin-left:auto; border:none; color:red; cursor:pointer; background:none;">Quitter</button>
         </div>
         <div class="contact-list" id="contact-list"></div>
     </div>
@@ -174,7 +110,6 @@
 </div>
 
 <script>
-    // Configuration Firebase
     const firebaseConfig = {
         apiKey: "846140280738",
         authDomain: "messagerie-cd2ba.firebaseapp.com",
@@ -189,49 +124,23 @@
     const db = firebase.database();
 
     let currentUser = null;
-    let currentContactId = null;
+    let currentChatId = null;
+    let isGroupChat = false;
     let activeChatRef = null;
-
-    // --- PRÉSENCE ---
-    function trackPresence(userId) {
-        const userStatusRef = db.ref(`users/${userId}/status`);
-        const connectedRef = db.ref('.info/connected');
-
-        connectedRef.on('value', (snap) => {
-            if (snap.val() === true) {
-                userStatusRef.onDisconnect().set('offline');
-                userStatusRef.set('online');
-            }
-        });
-    }
-
-    // --- NOTIFICATIONS ---
-    function sendNotification(name, text) {
-        if (Notification.permission === "granted" && document.hidden) {
-            new Notification(name, { body: text });
-        }
-    }
 
     // --- CONNEXION ---
     document.getElementById('login-btn').onclick = () => {
         const name = document.getElementById('username-input').value.trim();
         if (!name) return;
-
         db.ref('users').orderByChild('name').equalTo(name).once('value', (snap) => {
             if (snap.exists()) {
-                const data = snap.val();
-                currentUser = data[Object.keys(data)[0]];
-                loginSuccess();
+                currentUser = Object.values(snap.val())[0];
             } else {
                 const newUserRef = db.ref('users').push();
-                currentUser = {
-                    id: newUserRef.key,
-                    name: name,
-                    color: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'),
-                    status: 'online'
-                };
-                newUserRef.set(currentUser).then(loginSuccess);
+                currentUser = { id: newUserRef.key, name: name, color: '#'+Math.floor(Math.random()*16777215).toString(16), status: 'online' };
+                newUserRef.set(currentUser);
             }
+            loginSuccess();
         });
     };
 
@@ -240,86 +149,116 @@
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app-container').style.display = 'flex';
         document.getElementById('my-name').textContent = currentUser.name;
-        
-        if ("Notification" in window) Notification.requestPermission();
-        
-        trackPresence(currentUser.id);
-        loadContacts();
+        db.ref(`users/${currentUser.id}/status`).set('online');
+        db.ref(`users/${currentUser.id}/status`).onDisconnect().set('offline');
+        loadSidebar();
     }
 
-    // --- CHARGEMENT CONTACTS ---
-    function loadContacts() {
-        db.ref('users').on('value', (snap) => {
+    // --- GROUPES ---
+    function createNewGroup() {
+        const groupName = prompt("Nom du groupe :");
+        if (!groupName) return;
+        const newGroupRef = db.ref('groups').push();
+        newGroupRef.set({
+            id: 'group_' + newGroupRef.key,
+            name: groupName,
+            createdBy: currentUser.name,
+            isGroup: true
+        });
+    }
+
+    // --- SIDEBAR (Contacts + Groupes) ---
+    function loadSidebar() {
+        // Écouter les utilisateurs ET les groupes
+        db.ref().on('value', (snapshot) => {
             const list = document.getElementById('contact-list');
             list.innerHTML = '';
-            snap.forEach((child) => {
-                const user = child.val();
-                if (user.id === currentUser.id) return;
-                
-                const isOnline = user.status === 'online';
-                const div = document.createElement('div');
-                div.className = `contact-item ${currentContactId === user.id ? 'active' : ''}`;
-                div.innerHTML = `
-                    <div class="avatar-wrapper">
-                        <div class="avatar" style="background:${user.color}">${user.name[0].toUpperCase()}</div>
-                        <div class="status-dot ${isOnline ? 'online' : ''}"></div>
-                    </div>
-                    <div style="flex:1">
-                        <div style="font-weight:600">${user.name}</div>
-                        <div style="font-size:11px; color:var(--text-secondary)">${isOnline ? 'En ligne' : 'Hors ligne'}</div>
-                    </div>`;
-                div.onclick = () => openChat(user);
-                list.appendChild(div);
+            
+            const users = snapshot.child('users').val() || {};
+            const groups = snapshot.child('groups').val() || {};
+
+            // Afficher les Groupes
+            Object.values(groups).forEach(group => {
+                renderItem(group, true);
+            });
+
+            // Afficher les Utilisateurs
+            Object.values(users).forEach(user => {
+                if (user.id !== currentUser.id) renderItem(user, false);
             });
         });
     }
 
-    // --- GESTION DU CHAT ---
-    function openChat(contact) {
-        currentContactId = contact.id;
+    function renderItem(item, isGroup) {
+        const list = document.getElementById('contact-list');
+        const div = document.createElement('div');
+        div.className = `contact-item ${isGroup ? 'is-group' : ''} ${currentChatId === item.id ? 'active' : ''}`;
+        
+        const statusClass = item.status === 'online' ? 'online' : '';
+        div.innerHTML = `
+            <div class="avatar-wrapper">
+                <div class="avatar" style="background:${item.color || '#53bdeb'}">${item.name[0]}</div>
+                ${!isGroup ? `<div class="status-dot ${statusClass}"></div>` : ''}
+            </div>
+            <div>
+                <div style="font-weight:600">${item.name}</div>
+                <div style="font-size:11px; color:var(--text-secondary)">${isGroup ? 'Groupe' : (item.status || 'hors ligne')}</div>
+            </div>`;
+        
+        div.onclick = () => openChat(item);
+        list.appendChild(div);
+    }
+
+    // --- CHAT LOGIC ---
+    function openChat(target) {
+        currentChatId = target.id;
+        isGroupChat = !!target.isGroup;
         document.getElementById('app-container').classList.add('chat-active');
         
-        const isOnline = contact.status === 'online';
         document.getElementById('active-chat-info').innerHTML = `
-            <div class="avatar" style="background:${contact.color}; width:35px; height:35px">${contact.name[0].toUpperCase()}</div>
-            <div>
-                <div style="font-weight:bold; font-size:14px">${contact.name}</div>
-                <div style="font-size:10px">${isOnline ? 'en ligne' : 'hors ligne'}</div>
-            </div>`;
+            <div class="avatar" style="background:${target.color || '#53bdeb'}; width:35px; height:35px; border-radius:${isGroupChat?'8px':'50%'}">${target.name[0]}</div>
+            <strong>${target.name}</strong>`;
         
         document.getElementById('message-input').disabled = false;
         document.getElementById('send-btn').disabled = false;
         document.getElementById('messages-container').innerHTML = '';
 
-        const chatId = [currentUser.id, currentContactId].sort().join('_');
         if (activeChatRef) activeChatRef.off();
-        activeChatRef = db.ref('chats/' + chatId);
+
+        // Définir le chemin de la base de données
+        const path = isGroupChat ? `group_messages/${target.id}` : `chats/${[currentUser.id, target.id].sort().join('_')}`;
+        activeChatRef = db.ref(path);
 
         activeChatRef.on('child_added', (snap) => {
             const msg = snap.val();
-            const container = document.getElementById('messages-container');
-            const isMe = msg.senderId === currentUser.id;
-            
-            const div = document.createElement('div');
-            div.className = `msg-bubble ${isMe ? 'msg-sent' : 'msg-received'}`;
-            div.textContent = msg.text;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-
-            if (!isMe) sendNotification(contact.name, msg.text);
+            displayMessage(msg);
         });
+    }
+
+    function displayMessage(msg) {
+        const container = document.getElementById('messages-container');
+        const isMe = msg.senderId === currentUser.id;
+        const div = document.createElement('div');
+        div.className = `msg-bubble ${isMe ? 'msg-sent' : 'msg-received'}`;
+        
+        // Afficher le nom de l'expéditeur si c'est un groupe et pas moi
+        const senderHtml = (isGroupChat && !isMe) ? `<span class="sender-name">${msg.senderName}</span>` : '';
+        
+        div.innerHTML = `${senderHtml}${msg.text}`;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
     }
 
     function sendMessage() {
         const input = document.getElementById('message-input');
         const text = input.value.trim();
-        if (!text || !currentContactId) return;
+        if (!text || !currentChatId) return;
 
-        const chatId = [currentUser.id, currentContactId].sort().join('_');
-        db.ref('chats/' + chatId).push({
+        activeChatRef.push({
             text: text,
             senderId: currentUser.id,
-            timestamp: firebase.database.ServerValue.TIMESTAMP
+            senderName: currentUser.name,
+            timestamp: Date.now()
         });
         input.value = '';
     }
@@ -327,24 +266,11 @@
     document.getElementById('send-btn').onclick = sendMessage;
     document.getElementById('message-input').onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
 
-    function closeChat() {
-        document.getElementById('app-container').classList.remove('chat-active');
-        currentContactId = null;
-        if (activeChatRef) activeChatRef.off();
-    }
+    function closeChat() { document.getElementById('app-container').classList.remove('chat-active'); }
+    function logout() { localStorage.clear(); location.reload(); }
 
-    function logout() { 
-        if(currentUser) db.ref(`users/${currentUser.id}/status`).set('offline');
-        localStorage.clear(); 
-        location.reload(); 
-    }
-
-    // Auto-login
     const saved = localStorage.getItem('chat_user');
-    if (saved) { 
-        currentUser = JSON.parse(saved); 
-        loginSuccess(); 
-    }
+    if (saved) { currentUser = JSON.parse(saved); loginSuccess(); }
 </script>
 
 </body>
