@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FireChat - Groupes & Suppression</title>
+    <title>FireChat - Groupes, Fichiers & Suppression</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -43,7 +43,6 @@
         
         .messages-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; }
         
-        /* BULLES DE MESSAGE ET SUPPRESSION */
         .msg-bubble { 
             max-width: 75%; padding: 8px 12px; margin-bottom: 5px; border-radius: 10px; 
             font-size: 14px; position: relative; word-wrap: break-word; 
@@ -55,8 +54,12 @@
         .sender-name { font-size: 11px; font-weight: bold; margin-bottom: 2px; display: block; color: var(--primary-dark); }
 
         .input-area { padding: 10px; background: var(--bg-header); display: flex; gap: 10px; align-items: center; }
-        .input-area input { flex: 1; padding: 12px; border: none; border-radius: 20px; outline: none; height: 40px; }
-        .input-area button { background: var(--primary); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; }
+        .input-area input[type="text"] { flex: 1; padding: 12px; border: none; border-radius: 20px; outline: none; height: 40px; }
+        .btn-action { background: var(--primary); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .btn-file { background: transparent; color: var(--text-secondary); font-size: 24px; }
+
+        .file-preview { max-width: 250px; border-radius: 8px; margin-top: 5px; display: block; }
+        .file-link { color: #027eb5; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 5px; }
 
         @media (max-width: 768px) {
             .app-container { width: 100%; height: 100vh; border-radius: 0; }
@@ -69,6 +72,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 </head>
 <body>
 
@@ -92,13 +96,16 @@
 
     <div class="chat-area">
         <div class="header">
-            <button onclick="closeChat()" style="background:none; border:none; cursor:pointer;">⬅</button>
+            <button onclick="closeChat()" style="background:none; border:none; cursor:pointer; font-size: 20px;">←</button>
             <div id="active-chat-info" style="display:flex; align-items:center; gap:10px">Sélectionne un chat</div>
         </div>
         <div class="messages-container" id="messages-container"></div>
         <div class="input-area">
+            <input type="file" id="file-input" style="display:none" onchange="handleFileUpload(this.files[0])">
+            <button class="btn-action btn-file" id="file-btn" onclick="document.getElementById('file-input').click()" disabled>📎</button>
+            
             <input type="text" id="message-input" placeholder="Message..." disabled>
-            <button id="send-btn" disabled>➤</button>
+            <button class="btn-action" id="send-btn" disabled>➤</button>
         </div>
     </div>
 </div>
@@ -116,6 +123,7 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    const storage = firebase.storage();
 
     let currentUser = null;
     let currentChatId = null;
@@ -176,7 +184,7 @@
         list.appendChild(div);
     }
 
-    // --- CHAT ET SUPPRESSION ---
+    // --- CHAT ET ENVOI ---
     function openChat(target) {
         currentChatId = target.id;
         isGroupChat = !!target.isGroup;
@@ -184,6 +192,7 @@
         document.getElementById('active-chat-info').innerHTML = `<strong>${target.name}</strong>`;
         document.getElementById('message-input').disabled = false;
         document.getElementById('send-btn').disabled = false;
+        document.getElementById('file-btn').disabled = false;
         
         const container = document.getElementById('messages-container');
         container.innerHTML = '';
@@ -192,16 +201,49 @@
         const path = isGroupChat ? `group_messages/${target.id}` : `chats/${[currentUser.id, target.id].sort().join('_')}`;
         activeChatRef = db.ref(path);
 
-        // On écoute "value" au lieu de "child_added" pour gérer les suppressions en temps réel facilement
         activeChatRef.on('value', (snap) => {
             container.innerHTML = '';
             snap.forEach((child) => {
-                const msg = child.val();
-                const msgId = child.key;
-                displayMessage(msg, msgId);
+                displayMessage(child.val(), child.key);
             });
             container.scrollTop = container.scrollHeight;
         });
+    }
+
+    // Gestion de l'envoi de fichier
+    async function handleFileUpload(file) {
+        if (!file || !activeChatRef) return;
+        
+        const sendBtn = document.getElementById('send-btn');
+        const msgInput = document.getElementById('message-input');
+        
+        // Indicateur visuel de chargement
+        msgInput.placeholder = "Téléchargement en cours...";
+        msgInput.disabled = true;
+        sendBtn.disabled = true;
+
+        try {
+            const fileRef = storage.ref().child(`uploads/${Date.now()}_${file.name}`);
+            const snapshot = await fileRef.put(file);
+            const downloadURL = await snapshot.ref.getDownloadURL();
+
+            activeChatRef.push({
+                text: file.name,
+                fileUrl: downloadURL,
+                fileType: file.type,
+                senderId: currentUser.id,
+                senderName: currentUser.name,
+                timestamp: Date.now()
+            });
+        } catch (error) {
+            console.error(error);
+            alert("Erreur lors de l'envoi du fichier.");
+        } finally {
+            msgInput.placeholder = "Message...";
+            msgInput.disabled = false;
+            sendBtn.disabled = false;
+            document.getElementById('file-input').value = "";
+        }
     }
 
     function displayMessage(msg, msgId) {
@@ -212,9 +254,24 @@
         div.className = `msg-bubble ${isMe ? 'msg-sent' : 'msg-received'}`;
         
         const sender = (isGroupChat && !isMe) ? `<span class="sender-name">${msg.senderName}</span>` : '';
-        div.innerHTML = `${sender}${msg.text}`;
+        
+        let content = msg.text;
 
-        // Système de suppression si c'est mon message
+        // Si c'est un fichier
+        if (msg.fileUrl) {
+            if (msg.fileType && msg.fileType.startsWith('image/')) {
+                content = `<a href="${msg.fileUrl}" target="_blank">
+                             <img src="${msg.fileUrl}" class="file-preview">
+                           </a>`;
+            } else {
+                content = `<a href="${msg.fileUrl}" target="_blank" class="file-link">
+                             📄 ${msg.text}
+                           </a>`;
+            }
+        }
+
+        div.innerHTML = `${sender}${content}`;
+
         if (isMe) {
             div.title = "Cliquer pour supprimer";
             div.onclick = () => {
