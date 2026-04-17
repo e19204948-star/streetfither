@@ -1,309 +1,295 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FireChat - Groupes, Fichiers & Suppression</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #00a884;
-            --primary-dark: #008f6f;
-            --bg-body: #d1d7db;
-            --bg-app: #ffffff;
-            --bg-chat: #efeae2;
-            --bg-header: #f0f2f5;
-            --text-main: #111b21;
-            --text-secondary: #667781;
-            --msg-sent: #dcf8c6;
-            --msg-received: #ffffff;
-            --online: #1fa33a;
-            --offline: #8696a0;
-            --group-color: #53bdeb;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FireChat Pro - Moderne</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00a884;
+            --primary-dark: #008f6f;
+            --bg-body: #f0f2f5;
+            --bg-app: #ffffff;
+            --bg-chat: #efeae2;
+            --bg-sidebar: #ffffff;
+            --text-main: #111b21;
+            --text-secondary: #667781;
+            --msg-sent: #dcf8c6;
+            --msg-received: #ffffff;
+            --accent: #53bdeb;
+            --shadow: 0 6px 18px rgba(0,0,0,0.05);
+        }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: linear-gradient(180deg, var(--primary) 127px, var(--bg-body) 127px); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body { 
+            background-color: var(--bg-body);
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden;
+        }
 
-        .login-screen { position: fixed; inset: 0; background: var(--primary); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .login-box { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; }
+        /* Décoration de fond */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 130px;
+            background-color: var(--primary);
+            z-index: -1;
+        }
 
-        .app-container { display: none; width: 95%; max-width: 1400px; height: 95vh; background: var(--bg-app); border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .sidebar { width: 30%; min-width: 300px; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
-        .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-chat); position: relative; }
-        .header { height: 60px; background: var(--bg-header); display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid #ddd; z-index: 10; gap: 10px; }
+        /* --- Écran de Connexion --- */
+        .login-screen { 
+            position: fixed; 
+            inset: 0; 
+            background: #f0f2f5; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 1000; 
+            padding: 20px;
+        }
+        .login-box { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 24px; 
+            width: 100%; 
+            max-width: 400px; 
+            text-align: center; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .login-box h2 { color: var(--primary); margin-bottom: 25px; font-weight: 700; font-size: 28px; }
+        .login-box input { 
+            width: 100%; 
+            padding: 15px; 
+            border: 2px solid #eee; 
+            border-radius: 12px; 
+            margin-bottom: 20px; 
+            outline: none; 
+            transition: 0.3s;
+        }
+        .login-box input:focus { border-color: var(--primary); }
+        .login-box button { 
+            width: 100%; 
+            padding: 15px; 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .login-box button:hover { background: var(--primary-dark); transform: translateY(-2px); }
 
-        .contact-list { flex: 1; overflow-y: auto; }
-        .contact-item { padding: 12px; border-bottom: 1px solid #f2f2f2; cursor: pointer; display: flex; align-items: center; gap: 12px; }
-        .contact-item:hover { background: #f9f9f9; }
-        .contact-item.active { background: #ebebeb; }
-        .contact-item.is-group .avatar { border-radius: 10px; background: var(--group-color) !important; }
+        /* --- Layout App --- */
+        .app-container { 
+            display: none; 
+            width: 95%; 
+            max-width: 1500px; 
+            height: 94vh; 
+            background: var(--bg-app); 
+            border-radius: 16px; 
+            overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
 
-        .avatar { width: 45px; height: 45px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; text-transform: uppercase; }
-        
-        .messages-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; }
-        
-        .msg-bubble { 
-            max-width: 75%; padding: 8px 12px; margin-bottom: 5px; border-radius: 10px; 
-            font-size: 14px; position: relative; word-wrap: break-word; 
-            cursor: pointer; transition: opacity 0.2s;
-        }
-        .msg-bubble:active { opacity: 0.7; }
-        .msg-sent { background: var(--msg-sent); align-self: flex-end; }
-        .msg-received { background: var(--msg-received); align-self: flex-start; }
-        .sender-name { font-size: 11px; font-weight: bold; margin-bottom: 2px; display: block; color: var(--primary-dark); }
+        /* Sidebar */
+        .sidebar { 
+            width: 30%; 
+            min-width: 320px; 
+            background: var(--bg-sidebar); 
+            display: flex; 
+            flex-direction: column;
+            border-right: 1px solid #e9edef;
+        }
+        .header { 
+            height: 65px; 
+            background: #f0f2f5; 
+            display: flex; 
+            align-items: center; 
+            padding: 0 16px; 
+            gap: 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        /* Liste Contacts */
+        .contact-list { flex: 1; overflow-y: auto; background: white; }
+        .contact-item { 
+            padding: 12px 16px; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            cursor: pointer; 
+            transition: 0.2s;
+            border-bottom: 1px solid #f5f6f6;
+        }
+        .contact-item:hover { background: #f5f6f6; }
+        .contact-item.active { background: #eff2f5; }
+        
+        .avatar { 
+            width: 48px; 
+            height: 48px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-weight: 600;
+            font-size: 18px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
 
-        .input-area { padding: 10px; background: var(--bg-header); display: flex; gap: 10px; align-items: center; }
-        .input-area input[type="text"] { flex: 1; padding: 12px; border: none; border-radius: 20px; outline: none; height: 40px; }
-        .btn-action { background: var(--primary); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-        .btn-file { background: transparent; color: var(--text-secondary); font-size: 24px; }
+        /* Zone de Chat */
+        .chat-area { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            background: var(--bg-chat); 
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); /* Pattern WhatsApp */
+            background-blend-mode: overlay;
+        }
 
-        .file-preview { max-width: 250px; border-radius: 8px; margin-top: 5px; display: block; }
-        .file-link { color: #027eb5; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+        .messages-container { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px 7% 10px 7%; 
+            display: flex; 
+            flex-direction: column; 
+            scroll-behavior: smooth;
+        }
 
-        @media (max-width: 768px) {
-            .app-container { width: 100%; height: 100vh; border-radius: 0; }
-            .sidebar { width: 100%; display: flex; }
-            .chat-area { display: none; width: 100%; }
-            .app-container.chat-active .sidebar { display: none; }
-            .app-container.chat-active .chat-area { display: flex; position: fixed; inset: 0; }
-        }
-    </style>
+        /* Bulles de Message */
+        .msg-bubble { 
+            max-width: 65%; 
+            padding: 8px 12px; 
+            margin-bottom: 4px; 
+            font-size: 14.5px; 
+            position: relative; 
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+        .msg-sent { 
+            background: var(--msg-sent); 
+            align-self: flex-end; 
+            border-radius: 12px 0 12px 12px; 
+        }
+        .msg-received { 
+            background: var(--msg-received); 
+            align-self: flex-start; 
+            border-radius: 0 12px 12px 12px; 
+        }
+
+        .sender-name { font-size: 12px; font-weight: 700; color: var(--primary-dark); margin-bottom: 3px; display: block; }
+
+        /* Input Zone */
+        .input-area { 
+            padding: 10px 16px; 
+            background: #f0f2f5; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+        }
+        .input-area input[type="text"] { 
+            flex: 1; 
+            padding: 12px 18px; 
+            border: none; 
+            border-radius: 24px; 
+            outline: none; 
+            font-size: 15px;
+            background: white;
+        }
+
+        .btn-action { 
+            background: none; 
+            border: none; 
+            color: #54656f; 
+            cursor: pointer; 
+            font-size: 22px; 
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-action:hover:not(:disabled) { color: var(--primary); transform: scale(1.1); }
+        .btn-send { color: var(--primary); font-size: 26px; }
+
+        .file-preview { 
+            max-width: 300px; 
+            border-radius: 8px; 
+            margin: 4px 0; 
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-container { width: 100%; height: 100vh; border-radius: 0; }
+            .sidebar { width: 100%; }
+            .chat-active .sidebar { display: none; }
+            .chat-active .chat-area { display: flex; position: fixed; inset: 0; }
+        }
+    </style>
 </head>
 <body>
 
 <div class="login-screen" id="login-screen">
-    <div class="login-box">
-        <h2>FireChat</h2>
-        <input type="text" id="username-input" placeholder="Ton prénom..." style="width:100%; padding:10px; margin-top:10px;">
-        <button id="login-btn" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px; font-weight:bold; margin-top:10px">Entrer</button>
-    </div>
+    <div class="login-box">
+        <h2>FireChat</h2>
+        <input type="text" id="username-input" placeholder="Quel est ton nom ?">
+        <button id="login-btn">Rejoindre la discussion</button>
+    </div>
 </div>
 
 <div class="app-container" id="app-container">
-    <div class="sidebar">
-        <div class="header">
-            <strong id="my-name">...</strong>
-            <button onclick="createNewGroup()" style="background:var(--primary); color:white; border:none; padding:5px 8px; border-radius:5px; cursor:pointer; font-size:11px">+ Groupe</button>
-            <button onclick="logout()" style="margin-left:auto; border:none; color:red; cursor:pointer; background:none; font-size:12px">Quitter</button>
-        </div>
-        <div class="contact-list" id="contact-list"></div>
-    </div>
+    <div class="sidebar">
+        <div class="header">
+            <div class="avatar" style="background:var(--primary)" id="user-initial">?</div>
+            <strong id="my-name">Chargement...</strong>
+            <button onclick="createNewGroup()" style="margin-left:auto; background: #e9edef; border:none; padding:8px 12px; border-radius:20px; cursor:pointer; font-size:12px; font-weight:600">+ Groupe</button>
+            <button onclick="logout()" style="border:none; color:#ea4335; cursor:pointer; background:none; font-size:18px" title="Quitter">✕</button>
+        </div>
+        <div class="contact-list" id="contact-list"></div>
+    </div>
 
-    <div class="chat-area">
-        <div class="header">
-            <button onclick="closeChat()" style="background:none; border:none; cursor:pointer; font-size: 20px;">←</button>
-            <div id="active-chat-info" style="display:flex; align-items:center; gap:10px">Sélectionne un chat</div>
-        </div>
-        <div class="messages-container" id="messages-container"></div>
-        <div class="input-area">
-            <input type="file" id="file-input" style="display:none" onchange="handleFileUpload(this.files[0])">
-            <button class="btn-action btn-file" id="file-btn" onclick="document.getElementById('file-input').click()" disabled>📎</button>
-            
-            <input type="text" id="message-input" placeholder="Message..." disabled>
-            <button class="btn-action" id="send-btn" disabled>➤</button>
-        </div>
-    </div>
+    <div class="chat-area">
+        <div class="header">
+            <button onclick="closeChat()" id="back-btn" style="background:none; border:none; cursor:pointer; font-size: 24px; color: #54656f;">←</button>
+            <div id="active-chat-info" style="display:flex; flex-direction:column;">
+                <span style="font-weight:600">Sélectionne une discussion</span>
+            </div>
+        </div>
+        
+        <div class="messages-container" id="messages-container">
+            </div>
+
+        <div class="input-area">
+            <input type="file" id="file-input" style="display:none" onchange="handleFileUpload(this.files[0])">
+            <button class="btn-action" id="file-btn" onclick="document.getElementById('file-input').click()" disabled>📎</button>
+            
+            <input type="text" id="message-input" placeholder="Tapez un message..." disabled>
+            
+            <button class="btn-action btn-send" id="send-btn" disabled>➤</button>
+        </div>
+    </div>
 </div>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "846140280738",
-        authDomain: "messagerie-cd2ba.firebaseapp.com",
-        databaseURL: "https://messagerie-cd2ba-default-rtdb.europe-west1.firebasedatabase.app/",
-        projectId: "messagerie-cd2ba",
-        storageBucket: "messagerie-cd2ba.appspot.com",
-        messagingSenderId: "846140280738",
-        appId: "messagerie-cd2ba"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const storage = firebase.storage();
-
-    let currentUser = null;
-    let currentChatId = null;
-    let isGroupChat = false;
-    let activeChatRef = null;
-
-    // --- CONNEXION ---
-    document.getElementById('login-btn').onclick = () => {
-        const name = document.getElementById('username-input').value.trim();
-        if (!name) return;
-        db.ref('users').orderByChild('name').equalTo(name).once('value', (snap) => {
-            if (snap.exists()) {
-                currentUser = Object.values(snap.val())[0];
-            } else {
-                const newUserRef = db.ref('users').push();
-                currentUser = { id: newUserRef.key, name: name, color: '#'+Math.floor(Math.random()*16777215).toString(16), status: 'online' };
-                newUserRef.set(currentUser);
-            }
-            loginSuccess();
-        });
-    };
-
-    function loginSuccess() {
-        localStorage.setItem('chat_user', JSON.stringify(currentUser));
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('app-container').style.display = 'flex';
-        document.getElementById('my-name').textContent = currentUser.name;
-        db.ref(`users/${currentUser.id}/status`).set('online');
-        loadSidebar();
-    }
-
-    function createNewGroup() {
-        const groupName = prompt("Nom du groupe :");
-        if (!groupName) return;
-        const ref = db.ref('groups').push();
-        ref.set({ id: 'group_' + ref.key, name: groupName, isGroup: true });
-    }
-
-    function loadSidebar() {
-        db.ref().on('value', (snapshot) => {
-            const list = document.getElementById('contact-list');
-            list.innerHTML = '';
-            const users = snapshot.child('users').val() || {};
-            const groups = snapshot.child('groups').val() || {};
-
-            Object.values(groups).forEach(g => renderSidebarItem(g, true));
-            Object.values(users).forEach(u => { if(u.id !== currentUser.id) renderSidebarItem(u, false) });
-        });
-    }
-
-    function renderSidebarItem(item, isGroup) {
-        const list = document.getElementById('contact-list');
-        const div = document.createElement('div');
-        div.className = `contact-item ${isGroup?'is-group':''} ${currentChatId===item.id?'active':''}`;
-        div.innerHTML = `<div class="avatar" style="background:${item.color||'#53bdeb'}">${item.name[0]}</div>
-                         <div><strong>${item.name}</strong><br><small>${isGroup?'Groupe':(item.status||'offline')}</small></div>`;
-        div.onclick = () => openChat(item);
-        list.appendChild(div);
-    }
-
-    // --- CHAT ET ENVOI ---
-    function openChat(target) {
-        currentChatId = target.id;
-        isGroupChat = !!target.isGroup;
-        document.getElementById('app-container').classList.add('chat-active');
-        document.getElementById('active-chat-info').innerHTML = `<strong>${target.name}</strong>`;
-        document.getElementById('message-input').disabled = false;
-        document.getElementById('send-btn').disabled = false;
-        document.getElementById('file-btn').disabled = false;
-        
-        const container = document.getElementById('messages-container');
-        container.innerHTML = '';
-
-        if (activeChatRef) activeChatRef.off();
-        const path = isGroupChat ? `group_messages/${target.id}` : `chats/${[currentUser.id, target.id].sort().join('_')}`;
-        activeChatRef = db.ref(path);
-
-        activeChatRef.on('value', (snap) => {
-            container.innerHTML = '';
-            snap.forEach((child) => {
-                displayMessage(child.val(), child.key);
-            });
-            container.scrollTop = container.scrollHeight;
-        });
-    }
-
-    // Gestion de l'envoi de fichier
-    async function handleFileUpload(file) {
-        if (!file || !activeChatRef) return;
-        
-        const sendBtn = document.getElementById('send-btn');
-        const msgInput = document.getElementById('message-input');
-        
-        // Indicateur visuel de chargement
-        msgInput.placeholder = "Téléchargement en cours...";
-        msgInput.disabled = true;
-        sendBtn.disabled = true;
-
-        try {
-            const fileRef = storage.ref().child(`uploads/${Date.now()}_${file.name}`);
-            const snapshot = await fileRef.put(file);
-            const downloadURL = await snapshot.ref.getDownloadURL();
-
-            activeChatRef.push({
-                text: file.name,
-                fileUrl: downloadURL,
-                fileType: file.type,
-                senderId: currentUser.id,
-                senderName: currentUser.name,
-                timestamp: Date.now()
-            });
-        } catch (error) {
-            console.error(error);
-            alert("Erreur lors de l'envoi du fichier.");
-        } finally {
-            msgInput.placeholder = "Message...";
-            msgInput.disabled = false;
-            sendBtn.disabled = false;
-            document.getElementById('file-input').value = "";
-        }
-    }
-
-    function displayMessage(msg, msgId) {
-        const container = document.getElementById('messages-container');
-        const isMe = msg.senderId === currentUser.id;
-        
-        const div = document.createElement('div');
-        div.className = `msg-bubble ${isMe ? 'msg-sent' : 'msg-received'}`;
-        
-        const sender = (isGroupChat && !isMe) ? `<span class="sender-name">${msg.senderName}</span>` : '';
-        
-        let content = msg.text;
-
-        // Si c'est un fichier
-        if (msg.fileUrl) {
-            if (msg.fileType && msg.fileType.startsWith('image/')) {
-                content = `<a href="${msg.fileUrl}" target="_blank">
-                             <img src="${msg.fileUrl}" class="file-preview">
-                           </a>`;
-            } else {
-                content = `<a href="${msg.fileUrl}" target="_blank" class="file-link">
-                             📄 ${msg.text}
-                           </a>`;
-            }
-        }
-
-        div.innerHTML = `${sender}${content}`;
-
-        if (isMe) {
-            div.title = "Cliquer pour supprimer";
-            div.onclick = () => {
-                if (confirm("Supprimer ce message pour tout le monde ?")) {
-                    activeChatRef.child(msgId).remove();
-                }
-            };
-        }
-
-        container.appendChild(div);
-    }
-
-    function sendMessage() {
-        const input = document.getElementById('message-input');
-        const text = input.value.trim();
-        if (!text) return;
-        activeChatRef.push({
-            text: text,
-            senderId: currentUser.id,
-            senderName: currentUser.name,
-            timestamp: Date.now()
-        });
-        input.value = '';
-    }
-
-    document.getElementById('send-btn').onclick = sendMessage;
-    document.getElementById('message-input').onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
-    function closeChat() { document.getElementById('app-container').classList.remove('chat-active'); }
-    function logout() { localStorage.clear(); location.reload(); }
-
-    const saved = localStorage.getItem('chat_user');
-    if (saved) { currentUser = JSON.parse(saved); loginSuccess(); }
+    // --- TON JAVASCRIPT EXISTANT ICI ---
+    // (Conserve toute ta logique Firebase sans changement)
+    
+    // Petite addition pour l'initiale de l'avatar utilisateur
+    const originalLoginSuccess = loginSuccess;
+    loginSuccess = function() {
+        originalLoginSuccess();
+        document.getElementById('user-initial').textContent = currentUser.name[0].toUpperCase();
+    };
 </script>
 
 </body>
