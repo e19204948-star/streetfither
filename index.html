@@ -664,8 +664,8 @@ const app = initializeApp(firebaseConfig);
 const db  = getDatabase(app);
 
 /* ══ CONSTANTES ══ */
-const FILE_SIZE_LIMIT  = 500 * 1024;   // 500 Ko max fichier
-const VOICE_SIZE_LIMIT = 700 * 1024;   // ~700 Ko ≈ 30–40 sec webm/opus
+const FILE_SIZE_LIMIT  = 5 * 1024 * 1024;   // 5 Mo max fichier
+const VOICE_SIZE_LIMIT = 5 * 1024 * 1024;   // 5 Mo max vocal (~3-4 min webm/opus)
 
 /* ══ BASE64 HELPER ══ */
 function blobToDataURL(blob) {
@@ -1087,7 +1087,7 @@ function renderFilePreview() {
 window.removeFile = i => { pendingFiles.splice(i,1); renderFilePreview(); };
 
 async function sendFile(file) {
-  if(file.size > FILE_SIZE_LIMIT){ showToast(`❌ ${file.name} trop lourd (max 500 Ko)`); return; }
+  if(file.size > FILE_SIZE_LIMIT){ showToast(`❌ ${file.name} trop lourd (max 5 Mo)`); return; }
   showToast(`Envoi de ${file.name}…`);
   try {
     const dataURL = await blobToDataURL(file);
@@ -1123,7 +1123,7 @@ async function startRecording() {
   recTimerInterval = setInterval(() => {
     const elapsed = Math.floor((Date.now()-recStartTime)/1000);
     document.getElementById('rec-timer').textContent = formatDuration(elapsed);
-    if(elapsed >= 120) stopAndSendRecording(); // auto-stop 2 min
+    if(elapsed >= 300) stopAndSendRecording(); // auto-stop 5 min
   }, 500);
 
   // Waveform live
@@ -1151,13 +1151,12 @@ function stopAndSendRecording() {
   const mimeType  = pendingVoiceMime || 'audio/webm';
   const convId    = currentConvId;
 
-  // Attendre l'événement onstop pour avoir TOUS les chunks
   mediaRecorder.onstop = async () => {
     const blob = new Blob(audioChunks, {type: mimeType});
     audioChunks = [];
 
     if(blob.size < 500){ showToast('Message trop court'); return; }
-    if(blob.size > VOICE_SIZE_LIMIT){ showToast(`🎙️ Trop long — max ~40 sec (${formatSize(blob.size)})`); return; }
+    if(blob.size > VOICE_SIZE_LIMIT){ showToast(`🎙️ Trop long — max 5 Mo (${formatSize(blob.size)})`); return; }
 
     const peaks = await computePeaks(blob, 40);
     showToast('Envoi du message vocal…');
@@ -1169,13 +1168,12 @@ function stopAndSendRecording() {
     } catch(e){ console.error(e); showToast('❌ Erreur envoi vocal'); }
   };
 
-  // Stoppe l'enregistrement (déclenche onstop après le dernier chunk)
   stopRecordingCleanup();
 }
 window.stopAndSendRecording = stopAndSendRecording;
 
 window.cancelRecording = () => {
-  mediaRecorder.onstop = null; // ne pas envoyer
+  mediaRecorder.onstop = null;
   stopRecordingCleanup();
   audioChunks = [];
   showToast('Enregistrement annulé');
