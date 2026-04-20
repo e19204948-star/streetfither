@@ -311,11 +311,21 @@
   .call-reject-btn .btn-text { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3px; }
   @keyframes pulse-ring { 0%, 100% { box-shadow: 0 8px 24px rgba(52,211,153,0.4); } 50% { box-shadow: 0 8px 40px rgba(52,211,153,0.6); } }
   .call-controls { display: flex; gap: 12px; justify-content: center; padding-top: 12px; }
-  .call-mute-btn, .call-end-btn { width: 48px; height: 48px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; position: relative; font-size: 20px; }
-  .call-mute-btn:hover, .call-end-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
-  .call-mute-btn:active, .call-end-btn:active { transform: scale(0.9); }
+  .call-mute-btn, .call-device-btn, .call-end-btn { width: 48px; height: 48px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; position: relative; font-size: 20px; }
+  .call-mute-btn:hover, .call-device-btn:hover, .call-end-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+  .call-mute-btn:active, .call-device-btn:active, .call-end-btn:active { transform: scale(0.9); }
   .call-mute-btn.muted { background: var(--danger); border-color: var(--danger); color: white; }
   .call-end-btn { background: var(--danger); border-color: var(--danger); color: white; }
+  /* ✅ NOUVEAU: Styles pour les sélecteurs d'appareil */
+  .call-device-selector { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); z-index: 202; min-width: 200px; max-width: 300px; }
+  .call-device-selector.visible { display: block; }
+  .device-selector-title { font-size: 0.85rem; font-weight: 600; color: var(--text2); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
+  .device-select { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; margin-bottom: 12px; outline: none; }
+  .device-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .device-close-btn { width: 100%; background: var(--accent); border: none; border-radius: 8px; padding: 8px; color: white; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background .2s; }
+  .device-close-btn:hover { background: var(--accent2); }
+  .device-selector-overlay { position: absolute; inset: 0; z-index: 201; display: none; }
+  .call-device-selector.visible ~ .device-selector-overlay { display: block; }
   .call-history-toggle { position: absolute; top: 16px; right: 16px; background: var(--bg3); border: 1px solid var(--border); color: var(--text2); border-radius: 10px; padding: 8px 12px; cursor: pointer; font-size: 0.85rem; transition: all .2s; font-weight: 500; }
   .call-history-toggle:hover { background: var(--accent); color: white; border-color: var(--accent); }
   .call-history-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 320px; background: var(--bg2); border-left: 1px solid var(--border); z-index: 201; transform: translateX(100%); transition: transform .3s ease; overflow-y: auto; display: flex; flex-direction: column; box-shadow: -4px 0 16px rgba(0,0,0,0.3); }
@@ -368,6 +378,107 @@
   .date-sep { display:flex; align-items:center; gap:10px; margin: 8px 0; }
   .date-sep::before, .date-sep::after { content:''; flex:1; height:1px; background:var(--border); }
   .date-sep span { font-size:.72rem; color:var(--text3); white-space:nowrap; }
+  
+  /* ✅ STYLES AVANCÉS POUR LES PARAMÈTRES */
+  .settings-tab { 
+    flex:1; padding:12px 0; background:none; border:none; border-bottom:3px solid transparent; 
+    color:var(--text2); font-family:'DM Sans',sans-serif; font-size:.85rem; font-weight:600; 
+    cursor:pointer; transition:all .2s; white-space:nowrap; 
+  }
+  .settings-tab:hover { color:var(--text); }
+  .settings-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+  
+  .settings-tab-content { display:none; }
+  .settings-tab-content.active { display:block; animation:fadeIn .3s; }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  
+  .settings-card { 
+    padding:16px; margin-bottom:12px; background:var(--bg3); border-radius:12px; 
+    border:1px solid var(--border); transition:all .2s; 
+  }
+  .settings-card:hover { background:var(--bg4); border-color:var(--accent-glow); }
+  
+  .settings-card.settings-toggle { 
+    display:flex; align-items:center; justify-content:space-between; padding:14px 16px;
+  }
+  
+  .settings-card.settings-profile { 
+    cursor:pointer; padding:16px; display:flex; 
+  }
+  .settings-card.settings-profile:hover { 
+    background:var(--accent-glow); border-color:var(--accent); transform:translateX(4px);
+  }
+  
+  .settings-header { 
+    font-size:.95rem; font-weight:600; color:var(--text); margin-bottom:4px;
+  }
+  .settings-desc { 
+    font-size:.80rem; color:var(--text2); 
+  }
+  
+  .settings-size-btn, .settings-time-btn, .settings-spacing-btn { 
+    flex:1; padding:10px 12px; background:var(--bg2); border:1px solid var(--border); border-radius:8px; 
+    color:var(--text2); font-family:'DM Sans',sans-serif; font-size:.85rem; font-weight:500; cursor:pointer; 
+    transition:all .2s; 
+  }
+  .settings-size-btn:hover, .settings-time-btn:hover, .settings-spacing-btn:hover { 
+    background:var(--bg3); color:var(--text); border-color:var(--accent); 
+  }
+  .settings-size-btn.active, .settings-time-btn.active, .settings-spacing-btn.active { 
+    background:var(--accent); color:white; border-color:var(--accent); box-shadow:0 4px 12px var(--accent-glow);
+  }
+  
+  input[type="range"] {
+    -webkit-appearance:none;
+    width:100%;
+    height:6px;
+    border-radius:3px;
+    background:var(--border);
+    outline:none;
+    cursor:pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance:none;
+    appearance:none;
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    background:var(--accent);
+    cursor:pointer;
+    box-shadow:0 2px 8px var(--accent-glow);
+    transition:all .2s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform:scale(1.15);
+    box-shadow:0 4px 12px var(--accent-glow);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    background:var(--accent);
+    cursor:pointer;
+    border:none;
+    box-shadow:0 2px 8px var(--accent-glow);
+    transition:all .2s;
+  }
+  input[type="range"]::-moz-range-thumb:hover {
+    transform:scale(1.15);
+    box-shadow:0 4px 12px var(--accent-glow);
+  }
+  
+  /* ✅ NOUVEAU: Styles pour les paramètres */
+  .settings-size-btn, .settings-time-btn, .settings-spacing-btn { 
+    flex:1; padding:9px 12px; background:var(--bg3); border:1px solid var(--border); border-radius:8px; 
+    color:var(--text2); font-family:'DM Sans',sans-serif; font-size:.85rem; font-weight:500; cursor:pointer; 
+    transition:all .2s; 
+  }
+  .settings-size-btn:hover, .settings-time-btn:hover, .settings-spacing-btn:hover { 
+    background:var(--bg4); color:var(--text); border-color:var(--accent); 
+  }
+  .settings-size-btn.active, .settings-time-btn.active, .settings-spacing-btn.active { 
+    background:var(--accent); color:white; border-color:var(--accent); 
+  }
   .toast { position:fixed; bottom:24px; right:24px; left:24px; background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:12px 18px; box-shadow:var(--shadow); font-size:.88rem; color:var(--text); z-index:200; animation: toastIn .3s ease; display:none; max-width:340px; margin:0 auto; }
   .toast.show { display:block; }
   @keyframes toastIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
@@ -418,6 +529,9 @@
     .call-avatar { width: 60px; height: 60px; font-size: 24px; margin-bottom: 12px; }
     .call-name { font-size: 1.2rem; margin-bottom: 8px; }
     .call-status, .call-quality { font-size: 0.8rem; }
+    /* ✅ Styles responsifs pour sélecteur d'appareil */
+    .call-device-selector { max-width: calc(100vw - 32px); }
+    .call-device-btn { width: 40px; height: 40px; font-size: 16px; }
     .call-direction { gap: 16px; margin-bottom: 20px; }
     .call-accept-btn, .call-reject-btn { width: 72px; height: 72px; font-size: 20px; }
     .call-accept-btn .btn-text, .call-reject-btn .btn-text { font-size: 0.75rem; }
@@ -534,6 +648,9 @@
         </button>
         <button class="icon-btn" onclick="openThemeModal()" title="Thèmes et couleurs">
           <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="3" r="1"/><circle cx="20" cy="13" r="1"/><circle cx="16" cy="21" r="1"/><circle cx="4" cy="17" r="1"/><circle cx="5" cy="7" r="1"/></svg>
+        </button>
+        <button class="icon-btn" onclick="openSettingsModal()" title="Paramètres">
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m5.08 5.08l4.24 4.24M1 12h6m6 0h6M4.22 19.78l4.24-4.24m5.08-5.08l4.24-4.24"/></svg>
         </button>
         <button class="theme-toggle" onclick="toggleTheme()" title="Thème">
           <svg id="theme-icon2" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -653,6 +770,230 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal" style="max-width:680px;display:flex;flex-direction:column;max-height:85vh;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid var(--border);">
+      <h3 style="margin:0;">⚙️ Paramètres Personnalisés</h3>
+      <button class="icon-btn" onclick="closeModal('settings-modal')" style="font-size:1.2rem;">✕</button>
+    </div>
+
+    <!-- Onglets -->
+    <div style="display:flex;gap:2px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:0;">
+      <button class="settings-tab active" data-tab="appearance" onclick="switchSettingsTab('appearance')">🎨 Apparence</button>
+      <button class="settings-tab" data-tab="audio" onclick="switchSettingsTab('audio')">🔊 Audio</button>
+      <button class="settings-tab" data-tab="advanced" onclick="switchSettingsTab('advanced')">⚡ Avancé</button>
+      <button class="settings-tab" data-tab="profiles" onclick="switchSettingsTab('profiles')">🎭 Profils</button>
+    </div>
+
+    <!-- Contenu à onglets -->
+    <div style="flex:1;overflow-y:auto;">
+
+      <!-- ONGLET: APPARENCE -->
+      <div class="settings-tab-content active" data-tab="appearance">
+        <!-- Taille de police avec prévisualisation -->
+        <div class="settings-card">
+          <div class="settings-header">📝 Taille de Police</div>
+          <div class="settings-desc">Ajustez la taille du texte dans toute l'application</div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button class="settings-size-btn" onclick="setFontSize('small')" id="size-small" title="13px">Petit</button>
+            <button class="settings-size-btn active" onclick="setFontSize('medium')" id="size-medium" title="16px">Moyen</button>
+            <button class="settings-size-btn" onclick="setFontSize('large')" id="size-large" title="18px">Grand</button>
+          </div>
+          <div style="padding:12px;background:var(--bg3);border-radius:8px;margin-top:12px;font-size:var(--preview-size, .9rem);">
+            📤 Aperçu: Ceci est le texte dans la taille actuelle
+          </div>
+        </div>
+
+        <!-- Espacement -->
+        <div class="settings-card">
+          <div class="settings-header">📋 Espacement & Densité</div>
+          <div class="settings-desc">Contrôlez la compacité de l'interface</div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button class="settings-spacing-btn" onclick="setSpacing('compact')" id="spacing-compact">Compact</button>
+            <button class="settings-spacing-btn active" onclick="setSpacing('normal')" id="spacing-normal">Normal</button>
+            <button class="settings-spacing-btn" onclick="setSpacing('spacious')" id="spacing-spacious">Spacieux</button>
+          </div>
+        </div>
+
+        <!-- Mode compact -->
+        <div class="settings-card settings-toggle">
+          <div style="flex:1;">
+            <div class="settings-header">🎯 Mode Compact</div>
+            <div class="settings-desc">Réduire les marges et le padding</div>
+          </div>
+          <input type="checkbox" id="compact-mode" onchange="toggleCompactMode()" style="width:24px;height:24px;accent-color:var(--accent);cursor:pointer;">
+        </div>
+
+        <!-- Animations -->
+        <div class="settings-card settings-toggle">
+          <div style="flex:1;">
+            <div class="settings-header">✨ Animations</div>
+            <div class="settings-desc">Transitions et effects visuels</div>
+          </div>
+          <input type="checkbox" id="animations-toggle" checked onchange="toggleAnimations()" style="width:24px;height:24px;accent-color:var(--accent);cursor:pointer;">
+        </div>
+
+        <!-- Format de l'heure -->
+        <div class="settings-card">
+          <div class="settings-header">⏰ Format de l'Heure</div>
+          <div class="settings-desc">Affichage 12h ou 24h</div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button class="settings-time-btn active" onclick="setTimeFormat('12h')" id="time-12h">12h (AM/PM)</button>
+            <button class="settings-time-btn" onclick="setTimeFormat('24h')" id="time-24h">24h</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ONGLET: AUDIO -->
+      <div class="settings-tab-content" data-tab="audio">
+        <!-- Notifications sonores -->
+        <div class="settings-card settings-toggle">
+          <div style="flex:1;">
+            <div class="settings-header">🔔 Notifications Sonores</div>
+            <div class="settings-desc">Sons pour les nouveaux messages</div>
+          </div>
+          <input type="checkbox" id="sounds-toggle" checked onchange="toggleSounds()" style="width:24px;height:24px;accent-color:var(--accent);cursor:pointer;">
+        </div>
+
+        <!-- Contrôle du volume -->
+        <div class="settings-card">
+          <div class="settings-header">🔊 Volume</div>
+          <div class="settings-desc">Niveau de volume des notifications</div>
+          <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+            <span style="font-size:.85rem;">🔇</span>
+            <input type="range" id="volume-slider" min="0" max="100" value="70" oninput="setNotificationVolume(this.value)" style="flex:1;height:6px;border-radius:3px;background:var(--border);outline:none;-webkit-appearance:none;appearance:none;cursor:pointer;">
+            <span style="font-size:.85rem;">🔊</span>
+            <span style="font-size:.85rem;color:var(--text2);width:35px;">
+              <span id="volume-display">70</span>%
+            </span>
+          </div>
+          <button class="btn-primary" onclick="testNotificationSound()" style="width:100%;margin-top:12px;padding:9px;font-size:.85rem;">🔔 Tester le son</button>
+        </div>
+
+        <!-- Vibration -->
+        <div class="settings-card settings-toggle">
+          <div style="flex:1;">
+            <div class="settings-header">📳 Vibration</div>
+            <div class="settings-desc">Retours haptiques sur mobile</div>
+          </div>
+          <input type="checkbox" id="vibration-toggle" checked onchange="toggleVibration()" style="width:24px;height:24px;accent-color:var(--accent);cursor:pointer;">
+        </div>
+      </div>
+
+      <!-- ONGLET: AVANCÉ -->
+      <div class="settings-tab-content" data-tab="advanced">
+        <!-- Statut personnalisé -->
+        <div class="settings-card">
+          <div class="settings-header">💬 Statut Personnalisé</div>
+          <div class="settings-desc">Votre message personnel (max 40 caractères)</div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <input type="text" id="custom-status" placeholder="Ex: 🎵 En musique..." maxlength="40" 
+              style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:.88rem;outline:none;transition:border .2s;" 
+              oninput="window.updateStatusPreview()" onchange="window.saveCustomStatus()" />
+            <button class="btn-primary" onclick="saveCustomStatus()" style="padding:10px 16px;font-size:.85rem;white-space:nowrap;">✓ Sauv.</button>
+          </div>
+          <div id="status-preview" style="margin-top:8px;padding:8px 12px;background:var(--bg3);border-radius:8px;font-size:.85rem;color:var(--text2);">Aperçu: </div>
+        </div>
+
+        <!-- Cache & Stockage -->
+        <div class="settings-card">
+          <div class="settings-header">🗂️ Stockage</div>
+          <div class="settings-desc">Gérez vos données sauvegardées</div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button class="btn-secondary" onclick="exportSettings()" style="flex:1;padding:10px;">💾 Exporter</button>
+            <button class="btn-secondary" onclick="importSettings()" style="flex:1;padding:10px;">📂 Importer</button>
+            <button class="btn-secondary" onclick="clearCache()" style="flex:1;padding:10px;">🗑️ Nettoyer</button>
+          </div>
+        </div>
+
+        <!-- À propos -->
+        <div class="settings-card">
+          <div class="settings-header">ℹ️ Informations</div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:12px;font-size:.85rem;">
+            <span style="color:var(--text2);">Version:</span>
+            <span>chat·io v1.2.0</span>
+            <span style="color:var(--text2);">Storage:</span>
+            <span id="storage-info">Calculer...</span>
+            <span style="color:var(--text2);">Paramètres actifs:</span>
+            <span id="active-settings">--</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ONGLET: PROFILS -->
+      <div class="settings-tab-content" data-tab="profiles">
+        <div style="margin-bottom:12px;padding:12px;background:rgba(124,106,255,.1);border-radius:8px;font-size:.85rem;color:var(--text2);">
+          💡 Appliquez rapidement des profils optimisés pour différentes situations
+        </div>
+
+        <!-- Profil Travail -->
+        <div class="settings-card settings-profile" onclick="applyProfile('work')">
+          <div style="display:flex;gap:12px;">
+            <div style="font-size:2rem;">💼</div>
+            <div style="flex:1;">
+              <div class="settings-header">Profil Travail</div>
+              <div class="settings-desc">Productivité maximale</div>
+              <div style="font-size:.75rem;color:var(--text3);margin-top:6px;">
+                • Interface compacte • Sons désactivés • Format 24h
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;color:var(--text2);">→</div>
+          </div>
+        </div>
+
+        <!-- Profil Relax -->
+        <div class="settings-card settings-profile" onclick="applyProfile('relax')">
+          <div style="display:flex;gap:12px;">
+            <div style="font-size:2rem;">🧘</div>
+            <div style="flex:1;">
+              <div class="settings-header">Profil Relax</div>
+              <div class="settings-desc">Confort et sérénité</div>
+              <div style="font-size:.75rem;color:var(--text3);margin-top:6px;">
+                • Police grande • Espacement spacieux • Animations douces
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;color:var(--text2);">→</div>
+          </div>
+        </div>
+
+        <!-- Profil Gaming -->
+        <div class="settings-card settings-profile" onclick="applyProfile('gaming')">
+          <div style="display:flex;gap:12px;">
+            <div style="font-size:2rem;">🎮</div>
+            <div style="flex:1;">
+              <div class="settings-header">Profil Gaming</div>
+              <div class="settings-desc">Performance & réactivité</div>
+              <div style="font-size:.75rem;color:var(--text3);margin-top:6px;">
+                • Mode compact • Animations minimales • Sons distinctifs
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;color:var(--text2);">→</div>
+          </div>
+        </div>
+
+        <!-- Profil Personnalisé -->
+        <div class="settings-card settings-profile" onclick="saveProfile()">
+          <div style="display:flex;gap:12px;">
+            <div style="font-size:2rem;">⭐</div>
+            <div style="flex:1;">
+              <div class="settings-header">💾 Sauvegarder Profil Actuel</div>
+              <div class="settings-desc">Conservez votre configuration personnalisée</div>
+            </div>
+            <div style="display:flex;align-items:center;color:var(--text2);">→</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Pied de page -->
+    <div class="modal-actions" style="border-top:1px solid var(--border);padding-top:16px;margin-top:16px;">
+      <button class="btn-secondary" onclick="resetSettings()">🔄 Réinitialiser</button>
+      <button class="btn-primary" onclick="closeModal('settings-modal')">✓ Fermer</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="theme-modal">
   <div class="modal">
     <h3>🎨 Thèmes & Couleurs</h3>
@@ -702,13 +1043,14 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAuto-generated-placeholder",
+  apiKey: "AIzaSyBpKHxkops7gzivSx6zwsVolRe34NXsgUA",
   authDomain: "messagerie-cd2ba.firebaseapp.com",
-  databaseURL: "https://messagerie-cd2ba-default-rtdb.europe-west1.firebasedatabase.app/",
+  databaseURL: "https://messagerie-cd2ba-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "messagerie-cd2ba",
-  storageBucket: "messagerie-cd2ba.appspot.com",
+  storageBucket: "messagerie-cd2ba.firebasestorage.app",
   messagingSenderId: "846140280738",
-  appId: "messagerie-cd2ba"
+  appId: "1:846140280738:web:03a0fb23ca8fa0e59bacfb",
+  measurementId: "G-S8CC69WLD4"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -881,6 +1223,20 @@ window.addEventListener('load', () => {
       }
     });
   }
+  
+  // ✅ Charger TOUS les paramètres personnalisés sauvegardés
+  const fontSize = localStorage.getItem('chat-font-size') || 'medium';
+  const spacing = localStorage.getItem('chat-spacing') || 'normal';
+  const animations = localStorage.getItem('chat-animations') !== '0';
+  const compact = localStorage.getItem('chat-compact-mode') === '1';
+  const vibration = localStorage.getItem('chat-vibration') !== '0';
+  const volume = localStorage.getItem('chat-notification-volume') || '70';
+  
+  window.applyFontSize(fontSize);
+  window.applySpacing(spacing);
+  window.applyAnimations(animations);
+  window.applyCompactMode(compact);
+  notificationVolume = volume;
 });
 // Fermer le menu en cliquant ailleurs
 document.addEventListener('click', (e) => {
@@ -910,6 +1266,365 @@ window.renderColorThemes = () => {
     grid.appendChild(btn);
   });
   updateThemeUI();
+};
+
+// ✅ NOUVEAU: Fonctions de personnalisation AVANCÉES
+let notificationVolume = localStorage.getItem('chat-notification-volume') || '70';
+
+window.openSettingsModal = () => {
+  document.getElementById('settings-modal').classList.add('open');
+  window.loadSettingsUI();
+  window.updateStorageInfo();
+};
+
+window.switchSettingsTab = function(tabName) {
+  // Masquer tous les onglets et leurs contenus
+  document.querySelectorAll('.settings-tab-content').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  document.querySelectorAll('.settings-tab').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  // Afficher l'onglet et son contenu sélectionnés
+  const contentTab = document.querySelector(`.settings-tab-content[data-tab="${tabName}"]`);
+  const buttonTab = document.querySelector(`.settings-tab[data-tab="${tabName}"]`);
+  
+  if(contentTab) contentTab.classList.add('active');
+  if(buttonTab) buttonTab.classList.add('active');
+  
+  console.log(`[Settings] Switched to tab: ${tabName}`);
+};
+
+window.loadSettingsUI = function() {
+  const fontSize = localStorage.getItem('chat-font-size') || 'medium';
+  const compact = localStorage.getItem('chat-compact-mode') === '1';
+  const animations = localStorage.getItem('chat-animations') !== '0';
+  const sounds = localStorage.getItem('chat-sounds') !== '0';
+  const timeFormat = localStorage.getItem('chat-time-format') || '12h';
+  const spacing = localStorage.getItem('chat-spacing') || 'normal';
+  const customStatus = localStorage.getItem('chat-custom-status') || '';
+  const vibration = localStorage.getItem('chat-vibration') !== '0';
+
+  // Mettre à jour tous les contrôles
+  document.querySelectorAll('.settings-size-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(`size-${fontSize}`)?.classList.add('active');
+  
+  document.getElementById('compact-mode').checked = compact;
+  document.getElementById('animations-toggle').checked = animations;
+  document.getElementById('sounds-toggle').checked = sounds;
+  document.getElementById('vibration-toggle').checked = vibration;
+  document.getElementById('custom-status').value = customStatus;
+  document.getElementById('volume-slider').value = notificationVolume;
+  document.getElementById('volume-display').textContent = notificationVolume;
+  
+  document.querySelectorAll('.settings-time-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(`time-${timeFormat}`)?.classList.add('active');
+  
+  document.querySelectorAll('.settings-spacing-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(`spacing-${spacing}`)?.classList.add('active');
+  
+  window.updateStatusPreview();
+};
+
+window.setFontSize = (size) => {
+  localStorage.setItem('chat-font-size', size);
+  window.applyFontSize(size);
+  document.querySelectorAll('.settings-size-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(`size-${size}`)?.classList.add('active');
+  window.notify(`📝 Taille: ${size}`, { type: 'info', duration: 1500, sound: false });
+};
+
+window.applyFontSize = function(size) {
+  const root = document.documentElement;
+  const sizes = { small: '13px', medium: '16px', large: '18px' };
+  root.style.fontSize = sizes[size] || '16px';
+  document.documentElement.style.setProperty('--preview-size', sizes[size]);
+};
+
+window.toggleCompactMode = () => {
+  const isCompact = document.getElementById('compact-mode').checked;
+  localStorage.setItem('chat-compact-mode', isCompact ? '1' : '0');
+  window.applyCompactMode(isCompact);
+  window.notify(isCompact ? '🎯 Mode compact' : '🎯 Mode normal', { type: 'info', duration: 1500, sound: false });
+};
+
+window.applyCompactMode = function(isCompact) {
+  if(isCompact) {
+    document.querySelectorAll('.conv-item').forEach(el => el.style.padding = '8px 8px');
+    document.querySelectorAll('.msg-bubble').forEach(el => el.style.padding = '6px 10px');
+  } else {
+    document.querySelectorAll('.conv-item').forEach(el => el.style.padding = '12px 10px');
+    document.querySelectorAll('.msg-bubble').forEach(el => el.style.padding = '10px 14px');
+  }
+};
+
+window.toggleAnimations = () => {
+  const enabled = document.getElementById('animations-toggle').checked;
+  localStorage.setItem('chat-animations', enabled ? '1' : '0');
+  window.applyAnimations(enabled);
+  window.notify(enabled ? '✨ Animations' : '✨ Pas d\'animations', { type: 'info', duration: 1500, sound: false });
+};
+
+window.applyAnimations = function(enabled) {
+  if(!enabled) {
+    document.body.style.animationDuration = '0s';
+    document.documentElement.style.setProperty('--animate', '0s');
+  } else {
+    document.body.style.animationDuration = '1s';
+    document.documentElement.style.setProperty('--animate', '.3s');
+  }
+};
+
+window.toggleSounds = () => {
+  const enabled = document.getElementById('sounds-toggle').checked;
+  localStorage.setItem('chat-sounds', enabled ? '1' : '0');
+  window.notify(enabled ? '🔔 Sons activés' : '🔇 Sons désactivés', { type: 'info', duration: 1500, sound: false });
+};
+
+window.toggleVibration = () => {
+  const enabled = document.getElementById('vibration-toggle').checked;
+  localStorage.setItem('chat-vibration', enabled ? '1' : '0');
+  window.notify(enabled ? '📳 Vibration' : '📳 Pas de vibration', { type: 'info', duration: 1500, sound: false });
+};
+
+window.setNotificationVolume = (val) => {
+  notificationVolume = val;
+  localStorage.setItem('chat-notification-volume', val);
+  document.getElementById('volume-display').textContent = val;
+};
+
+window.testNotificationSound = () => {
+  const enabled = document.getElementById('sounds-toggle').checked;
+  if(!enabled) {
+    window.notify('🔇 Activez d\'abord les sons', { type: 'warning', duration: 1500 });
+    return;
+  }
+  
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const vol = (notificationVolume / 100) * 0.3;
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+    gain.gain.setValueAtTime(vol, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+    
+    osc.frequency.setValueAtTime(800, audioContext.currentTime);
+    osc.start(audioContext.currentTime);
+    osc.stop(audioContext.currentTime + 0.5);
+    
+    window.notify('🔊 Son de test', { type: 'success', duration: 1000, sound: false });
+  } catch(e) {
+    console.error('Audio error:', e);
+  }
+};
+
+window.setTimeFormat = (format) => {
+  localStorage.setItem('chat-time-format', format);
+  document.querySelectorAll('.settings-time-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(`time-${format}`)?.classList.add('active');
+  window.notify(`⏰ ${format}`, { type: 'info', duration: 1500, sound: false });
+};
+
+window.setSpacing = (spacing) => {
+  localStorage.setItem('chat-spacing', spacing);
+  window.applySpacing(spacing);
+  document.querySelectorAll('.settings-spacing-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(`spacing-${spacing}`)?.classList.add('active');
+  window.notify(`📋 ${spacing}`, { type: 'info', duration: 1500, sound: false });
+};
+
+window.applySpacing = function(spacing) {
+  const paddings = { compact: '8px', normal: '12px', spacious: '16px' };
+  document.documentElement.style.setProperty('--item-padding', paddings[spacing] || '12px');
+}
+
+window.updateStatusPreview = function() {
+  const status = document.getElementById('custom-status').value || 'Aucun statut';
+  document.getElementById('status-preview').textContent = `Aperçu: ${status}`;
+};
+
+window.saveCustomStatus = () => {
+  const status = document.getElementById('custom-status').value.trim();
+  localStorage.setItem('chat-custom-status', status);
+  window.updateStatusPreview();
+  window.notify('💬 Statut sauvegardé', { type: 'info', duration: 1500, sound: false });
+};
+
+// PROFILS PRÉDÉFINIS
+const profiles = {
+  work: {
+    name: '💼 Travail',
+    fontSize: 'medium',
+    compact: true,
+    animations: true,
+    sounds: false,
+    timeFormat: '24h',
+    spacing: 'compact',
+    volume: '30'
+  },
+  relax: {
+    name: '🧘 Relax',
+    fontSize: 'large',
+    compact: false,
+    animations: true,
+    sounds: true,
+    timeFormat: '12h',
+    spacing: 'spacious',
+    volume: '50'
+  },
+  gaming: {
+    name: '🎮 Gaming',
+    fontSize: 'small',
+    compact: true,
+    animations: false,
+    sounds: true,
+    timeFormat: '24h',
+    spacing: 'compact',
+    volume: '80'
+  }
+};
+
+window.applyProfile = (profileName) => {
+  const profile = profiles[profileName];
+  if(!profile) return;
+  
+  // Appliquer tous les paramètres du profil
+  setFontSize(profile.fontSize);
+  document.getElementById('compact-mode').checked = profile.compact;
+  document.getElementById('animations-toggle').checked = profile.animations;
+  document.getElementById('sounds-toggle').checked = profile.sounds;
+  setTimeFormat(profile.timeFormat);
+  setSpacing(profile.spacing);
+  setNotificationVolume(profile.volume);
+  
+  toggleCompactMode();
+  toggleAnimations();
+  toggleSounds();
+  
+  window.loadSettingsUI();
+  window.notify(`✅ Profil ${profile.name} appliqué`, { type: 'success', duration: 2000 });
+};
+
+window.saveProfile = () => {
+  const profileName = prompt('Nom du profil personnalisé:');
+  if(!profileName) return;
+  
+  const currentProfile = {
+    fontSize: localStorage.getItem('chat-font-size') || 'medium',
+    compact: localStorage.getItem('chat-compact-mode') === '1',
+    animations: localStorage.getItem('chat-animations') !== '0',
+    sounds: localStorage.getItem('chat-sounds') !== '0',
+    timeFormat: localStorage.getItem('chat-time-format') || '12h',
+    spacing: localStorage.getItem('chat-spacing') || 'normal',
+    volume: notificationVolume
+  };
+  
+  localStorage.setItem(`chat-profile-${profileName}`, JSON.stringify(currentProfile));
+  window.notify(`⭐ Profil "${profileName}" sauvegardé`, { type: 'success', duration: 2000 });
+};
+
+window.exportSettings = () => {
+  const settings = {
+    fontSize: localStorage.getItem('chat-font-size'),
+    compact: localStorage.getItem('chat-compact-mode'),
+    animations: localStorage.getItem('chat-animations'),
+    sounds: localStorage.getItem('chat-sounds'),
+    timeFormat: localStorage.getItem('chat-time-format'),
+    spacing: localStorage.getItem('chat-spacing'),
+    customStatus: localStorage.getItem('chat-custom-status'),
+    volume: notificationVolume,
+    exportDate: new Date().toLocaleString('fr-FR')
+  };
+  
+  const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `chat-io-settings-${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  window.notify('💾 Paramètres exportés', { type: 'success', duration: 1500 });
+};
+
+window.importSettings = () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const settings = JSON.parse(evt.target.result);
+        Object.entries(settings).forEach(([key, value]) => {
+          if(key !== 'exportDate') {
+            localStorage.setItem(`chat-${key}`, value);
+          }
+        });
+        window.loadSettingsUI();
+        window.notify('📂 Paramètres importés', { type: 'success', duration: 1500 });
+      } catch(err) {
+        window.notify('❌ Erreur d\'importation', { type: 'danger', duration: 1500 });
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+};
+
+window.clearCache = () => {
+  if(!confirm('Effacer tous les paramètres et le cache?')) return;
+  
+  Object.keys(localStorage).forEach(key => {
+    if(key.startsWith('chat-')) localStorage.removeItem(key);
+  });
+  
+  window.location.reload();
+};
+
+window.updateStorageInfo = function() {
+  const settingsCount = Object.keys(localStorage).filter(k => k.startsWith('chat-')).length;
+  document.getElementById('active-settings').textContent = `${settingsCount} paramètres sauvegardés`;
+  
+  try {
+    const estimate = navigator.storage?.estimate?.();
+    if(estimate) {
+      estimate.then(info => {
+        const used = (info.usage / 1024).toFixed(1);
+        document.getElementById('storage-info').textContent = `${used} KB utilisés`;
+      });
+    }
+  } catch(e) {}
+};
+
+window.resetSettings = () => {
+  if(!confirm('Réinitialiser TOUS les paramètres personnalisés?')) return;
+  
+  localStorage.removeItem('chat-font-size');
+  localStorage.removeItem('chat-compact-mode');
+  localStorage.removeItem('chat-animations');
+  localStorage.removeItem('chat-sounds');
+  localStorage.removeItem('chat-time-format');
+  localStorage.removeItem('chat-spacing');
+  localStorage.removeItem('chat-custom-status');
+  localStorage.removeItem('chat-vibration');
+  localStorage.removeItem('chat-notification-volume');
+  
+  window.applyFontSize('medium');
+  window.applyCompactMode(false);
+  window.applyAnimations(true);
+  window.applySpacing('normal');
+  notificationVolume = '70';
+  
+  loadSettingsUI();
+  window.notify('✅ Paramètres réinitialisés', { type: 'info', duration: 2000, sound: false });
 };
 
 /* ══ PASSWORD ══ */
@@ -1012,6 +1727,13 @@ function startApp(user) {
   loadUsers();
   loadConversations();
   setupCallListener();
+  // ✅ NOUVEAU: Énumérer les appareils audio disponibles au démarrage
+  enumerateAudioDevices().catch(e => console.warn('[DEVICES] Énumération non disponible:', e));
+  // ✅ NOUVEAU: Écouter les changements d'appareils (connexion/déconnexion)
+  navigator.mediaDevices.addEventListener('devicechange', () => {
+    console.log('[DEVICES] Changement d\'appareils détecté');
+    enumerateAudioDevices().catch(e => console.warn('[DEVICES] Énumération échouée:', e));
+  });
   // Clean up stale call data on login
   remove(ref(db, `calls/${currentUser.id}`)).catch(()=>{});
   window.addEventListener('beforeunload', () => update(ref(db,`users/${currentUser.id}`),{online:false}));
@@ -1291,17 +2013,107 @@ async function sendFile(file) {
 // 2. L'élément <audio> distant est correctement créé et attaché au DOM
 // 3. Les tracks locaux sont ajoutés AVANT createOffer/createAnswer
 // 4. Meilleure gestion de l'autoplay avec interaction utilisateur
+// 5. ✅ NOUVEAU: Gestion des appareils audio (microphone + sortie)
 // ═══════════════════════════════════════════════════════════════
 
 // Gestionnaire audio global pour les ringtones et sons
 let globalAudioCtx = null;
 let ringtoneInterval = null;
+let selectedMicDeviceId = '';        // ID du microphone sélectionné (vide = défaut)
+let selectedSpeakerDeviceId = '';   // ID du haut-parleur sélectionné (vide = défaut)
+let audioDevices = { microphones: [], speakers: [] }; // Cache des appareils
 
 function getAudioCtx() {
   if(!globalAudioCtx || globalAudioCtx.state === 'closed') {
     try { globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
   }
   return globalAudioCtx;
+}
+
+// ── GESTION DES APPAREILS AUDIO ──
+async function enumerateAudioDevices() {
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    audioDevices.microphones = devices.filter(d => d.kind === 'audioinput');
+    audioDevices.speakers = devices.filter(d => d.kind === 'audiooutput');
+    console.log('[DEVICES] 🎤 Microphones:', audioDevices.microphones.map(d => `${d.label}(${d.deviceId})`).join(', '));
+    console.log('[DEVICES] 🔊 Haut-parleurs:', audioDevices.speakers.map(d => `${d.label}(${d.deviceId})`).join(', '));
+    return { microphones: audioDevices.microphones, speakers: audioDevices.speakers };
+  } catch(e) {
+    console.error('[DEVICES] ❌ Erreur énumération:', e);
+    return { microphones: [], speakers: [] };
+  }
+}
+
+// Changer de microphone (effectif pour le prochain appel)
+async function setMicDevice(deviceId) {
+  selectedMicDeviceId = deviceId;
+  console.log('[DEVICES] 🎤 Microphone sélectionné:', deviceId);
+  
+  // Si un appel est en cours, il faut recréer le stream
+  if(callState !== 'idle' && localStream) {
+    try {
+      console.log('[DEVICES] Remplacement du microphone en direct...');
+      const newStream = await navigator.mediaDevices.getUserMedia({
+        audio: { deviceId: { exact: deviceId }, echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+        video: false
+      });
+      
+      // Remplacer les tracks dans la PeerConnection
+      const oldTracks = localStream?.getAudioTracks() || [];
+      const oldTrack = oldTracks.length > 0 ? oldTracks[0] : null;
+      const newTracks = newStream?.getAudioTracks() || [];
+      const newTrack = newTracks.length > 0 ? newTracks[0] : null;
+      
+      if(peerConnection && oldTrack && newTrack) {
+        const sender = peerConnection.getSenders().find(s => s.track?.kind === 'audio');
+        if(sender) {
+          await sender.replaceTrack(newTrack);
+          console.log('[DEVICES] ✅ Microphone changé avec succès');
+          // Arrêter l'ancien
+          if(oldTrack) oldTrack.stop();
+          // Mettre à jour le stream local
+          oldTracks.forEach(t => { try { t.stop(); } catch(e) {} });
+          localStream = newStream;
+          window.notify('🎤 Microphone changé', { type: 'info', duration: 1500, sound: false });
+        } else {
+          newStream.getTracks().forEach(t => { try { t.stop(); } catch(e) {} });
+        }
+      } else {
+        newStream.getTracks().forEach(t => { try { t.stop(); } catch(e) {} });
+        console.error('[DEVICES] ❌ Impossible de remplacer le track');
+      }
+    } catch(e) {
+      console.error('[DEVICES] ❌ Erreur changement microphone:', e);
+      window.notify('❌ Impossible de changer le microphone', { type: 'error', duration: 2000, sound: false });
+    }
+  }
+}
+
+// Changer la sortie audio (haut-parleur) pendant l'appel
+async function setSpeakerDevice(deviceId) {
+  selectedSpeakerDeviceId = deviceId;
+  console.log('[DEVICES] 🔊 Haut-parleur sélectionné:', deviceId);
+  
+  if(!remoteAudioEl) {
+    console.warn('[DEVICES] ⚠️ Pas d\'élément audio distant disponible');
+    return;
+  }
+  
+  try {
+    // Utiliser setSinkId si disponible (Chrome, Edge)
+    if(typeof remoteAudioEl.setSinkId === 'function') {
+      await remoteAudioEl.setSinkId(deviceId);
+      console.log('[DEVICES] ✅ Sortie audio changée avec succès');
+      window.notify('🔊 Haut-parleur changé', { type: 'info', duration: 1500, sound: false });
+    } else {
+      console.warn('[DEVICES] ⚠️ setSinkId non supporté sur ce navigateur');
+      window.notify('⚠️ Changement de sortie non supporté', { type: 'warning', duration: 2000, sound: false });
+    }
+  } catch(e) {
+    console.error('[DEVICES] ❌ Erreur changement haut-parleur:', e);
+    window.notify('❌ Impossible de changer le haut-parleur', { type: 'error', duration: 2000, sound: false });
+  }
 }
 
 function playTone(freq, duration, volume = 0.3, delay = 0) {
@@ -1353,13 +2165,22 @@ async function getLocalStream() {
   }
   
   try {
+    // Configuration audio avec deviceId si disponible
+    const audioConstraints = {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true,
+      channelCount: 1
+    };
+    
+    // Si un microphone spécifique est sélectionné, l'utiliser
+    if(selectedMicDeviceId) {
+      audioConstraints.deviceId = { exact: selectedMicDeviceId };
+      console.log('[MIC] Utilisation du microphone sélectionné:', selectedMicDeviceId);
+    }
+    
     localStream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true,
-        channelCount: 1
-      },
+      audio: audioConstraints,
       video: false
     });
     
@@ -1450,6 +2271,13 @@ function createPeerConnection() {
     remoteAudioEl.muted = false;
     remoteAudioEl.volume = 1.0;
 
+    // ✅ NOUVEAU: Appliquer le haut-parleur sélectionné si disponible
+    if(selectedSpeakerDeviceId && remoteAudioEl.setSinkId) {
+      remoteAudioEl.setSinkId(selectedSpeakerDeviceId)
+        .then(() => console.log('[AUDIO] ✅ Haut-parleur appliqué:', selectedSpeakerDeviceId))
+        .catch(e => console.warn('[AUDIO] ⚠️ Impossible d\'appliquer setSinkId:', e));
+    }
+
     // Tenter la lecture immédiatement
     const tryPlay = () => {
       console.log('[AUDIO] 🎵 Tentative de lecture - Volume:', remoteAudioEl.volume, '- Muted:', remoteAudioEl.muted, '- ReadyState:', remoteAudioEl.readyState);
@@ -1487,6 +2315,10 @@ function createPeerConnection() {
   // ICE candidates — envoi vers Firebase
   pc.onicecandidate = (event) => {
     if(!event.candidate) return;
+    if(!currentUser || !currentUser.id || !currentCallUser) {
+      console.warn('[ICE] ⚠️ currentUser ou currentCallUser non défini');
+      return;
+    }
     const candidateData = {
       candidate: JSON.stringify(event.candidate.toJSON()),
       ts: Date.now()
@@ -1536,33 +2368,52 @@ function startListeningCandidates(fromUserId) {
   }
 
   const processedCandidates = new Set();
+  let isProcessing = false;
 
   iceCandidateUnsubscribe = onValue(
     ref(db, `calls/${fromUserId}/${currentUser.id}/candidates`),
-    async (snap) => {
+    (snap) => {
+      if(isProcessing) return;
       const candidates = snap.val();
       if(!candidates || !peerConnection) return;
 
       // Attendre que remoteDescription soit définie
       if(!peerConnection.remoteDescription) {
         console.log('[ICE] RemoteDescription pas encore prête, mise en attente');
-        pendingCandidates.push(...Object.entries(candidates).map(([id, d]) => ({id, d})));
+        const newCandidates = Object.entries(candidates)
+          .filter(([id]) => !processedCandidates.has(id))
+          .map(([id, d]) => ({id, d}));
+        pendingCandidates.push(...newCandidates);
         return;
       }
 
+      isProcessing = true;
+      const promises = [];
+      
       for(const [id, data] of Object.entries(candidates)) {
         if(processedCandidates.has(id)) continue;
         processedCandidates.add(id);
         try {
           const candidate = JSON.parse(data.candidate);
-          await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-          console.log('[ICE] ✅ Candidate ajouté');
+          const promise = peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+            .then(() => console.log('[ICE] ✅ Candidate ajouté'))
+            .catch(e => {
+              if(!e.message.includes('Unknown iceCandidate')) {
+                console.warn('[ICE] Erreur candidate:', e.message);
+              }
+            });
+          promises.push(promise);
         } catch(e) {
-          if(!e.message.includes('Unknown iceCandidate')) {
-            console.warn('[ICE] Erreur candidate:', e.message);
-          }
+          console.warn('[ICE] Erreur parsing candidate:', e.message);
         }
       }
+      
+      Promise.all(promises).then(() => {
+        isProcessing = false;
+      }).catch(e => {
+        console.error('[ICE] Erreur traitement candidates:', e);
+        isProcessing = false;
+      });
     }
   );
 }
@@ -1571,13 +2422,25 @@ function startListeningCandidates(fromUserId) {
 async function flushPendingCandidates() {
   if(!pendingCandidates.length || !peerConnection?.remoteDescription) return;
   console.log('[ICE] Flush de', pendingCandidates.length, 'candidates en attente');
-  for(const {d} of pendingCandidates) {
+  
+  const promises = pendingCandidates.map(({d}) => {
     try {
       const candidate = JSON.parse(d.candidate);
-      await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-    } catch(e) {}
+      return peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+        .catch(e => console.warn('[ICE] Erreur candidate en attente:', e.message));
+    } catch(e) {
+      console.warn('[ICE] Erreur parsing candidate en attente:', e);
+      return Promise.resolve();
+    }
+  });
+  
+  try {
+    await Promise.all(promises);
+    pendingCandidates = [];
+    console.log('[ICE] ✅ Toutes les candidates en attente ont été traitées');
+  } catch(e) {
+    console.error('[ICE] Erreur flush candidates:', e);
   }
-  pendingCandidates = [];
 }
 
 function showAudioUnblockButton() {
@@ -1624,10 +2487,10 @@ function startCallDurationTimer() {
 
 // ── INITIER UN APPEL (caller) ──
 window.initiateCall = async function() {
-  if(!currentConvId) { showToast('Sélectionnez une conversation'); return; }
+  if(!currentConvId) { window.showToast('Sélectionnez une conversation'); return; }
   const conv = conversations[currentConvId];
-  if(conv.type !== 'direct') { showToast('Appels disponibles uniquement en conversation directe'); return; }
-  if(callState !== 'idle') { showToast('Un appel est déjà en cours'); return; }
+  if(conv.type !== 'direct') { window.showToast('Appels disponibles uniquement en conversation directe'); return; }
+  if(callState !== 'idle') { window.showToast('Un appel est déjà en cours'); return; }
 
   const otherUserId = Object.keys(conv.members || {}).find(m => m !== currentUser.id);
   if(!otherUserId) return;
@@ -1670,7 +2533,7 @@ window.initiateCall = async function() {
 
     callTimeout = setTimeout(() => {
       if(callState === 'calling') {
-        showToast('❌ Appel non répondu');
+        window.showToast('❌ Appel non répondu');
         window.endCall();
       }
     }, 30000);
@@ -1685,7 +2548,7 @@ window.initiateCall = async function() {
     } else if(e.name === 'NotReadableError') {
       errorMsg = 'Microphone en utilisation par une autre application';
     }
-    showToast('❌ ' + errorMsg);
+    window.showToast('❌ ' + errorMsg);
     callState = 'idle'; 
     currentCallUser = null;
     if(localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
@@ -1694,7 +2557,11 @@ window.initiateCall = async function() {
 
 function listenForAnswer(toUserId) {
   const answerRef = ref(db, `calls/${toUserId}/${currentUser.id}`);
-  const unsubAnswer = onValue(answerRef, async (snap) => {
+  let unsubscribed = false;
+  
+  const unsubAnswer = onValue(answerRef, (snap) => {
+    if(unsubscribed) return;
+    
     const data = snap.val();
     if(!data) return;
 
@@ -1703,21 +2570,31 @@ function listenForAnswer(toUserId) {
       try {
         const answer = JSON.parse(data.answer);
         console.log('[CALL] Application de la RemoteDescription...');
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-        console.log('[CALL] ✅ RemoteDescription définie avec succès');
-        callState = 'connected';
-
-        // Maintenant on peut commencer à écouter les ICE candidates
-        console.log('[CALL] Écoute des ICE candidates...');
-        startListeningCandidates(toUserId);
-        await flushPendingCandidates();
-
-        unsubAnswer(); // Arrêter d'écouter la réponse
+        
+        // Utilisez setRemoteDescription de manière asynchrone correcte
+        peerConnection.setRemoteDescription(new RTCSessionDescription(answer))
+          .then(() => {
+            console.log('[CALL] ✅ RemoteDescription définie avec succès');
+            callState = 'connected';
+            
+            // Maintenant on peut commencer à écouter les ICE candidates
+            console.log('[CALL] Écoute des ICE candidates...');
+            startListeningCandidates(toUserId);
+            return flushPendingCandidates();
+          })
+          .then(() => {
+            unsubscribed = true;
+            unsubAnswer(); // Arrêter d'écouter la réponse
+          })
+          .catch(e => {
+            console.error('[CALL] ❌ Erreur setRemoteDescription:', e.name, '-', e.message);
+          });
       } catch(e) {
-        console.error('[CALL] ❌ Erreur setRemoteDescription:', e.name, '-', e.message);
+        console.error('[CALL] ❌ Erreur parsing answer:', e.message);
       }
     } else if(data.type === 'rejected' || data.type === 'ended') {
-      showToast(data.type === 'rejected' ? '📵 Appel refusé' : '📞 Appel terminé');
+      window.showToast(data.type === 'rejected' ? '📵 Appel refusé' : '📞 Appel terminé');
+      unsubscribed = true;
       unsubAnswer();
       window.endCall();
     }
@@ -1738,7 +2615,7 @@ window.handleIncomingCall = async function(fromUserId, callData) {
   const callerName = allUsers[fromUserId]?.name || 'Utilisateur';
 
   startRingtone();
-  notify('📞 Appel entrant', { message: `de ${callerName}`, type: 'info', icon: '📞', duration: 0, sound: false });
+  window.notify('📞 Appel entrant', { message: `de ${callerName}`, type: 'info', icon: '📞', duration: 0, sound: false });
   showCallUI(fromUserId, 'incoming');
   updateCallStatus(`📞 ${callerName} vous appelle…`);
 
@@ -1754,6 +2631,13 @@ window.handleIncomingCall = async function(fromUserId, callData) {
 window.acceptCall = async function() {
   if(callState !== 'incoming' || !window._pendingOffer) return;
   const { fromUserId, offerData } = window._pendingOffer;
+  if(!offerData || !offerData.offer) {
+    console.error('[ANSWER] ❌ Offre invalide ou manquante');
+    window.showToast('❌ Erreur : offre invalide');
+    window.endCall();
+    return;
+  }
+  
   window._pendingOffer = null;
   stopRingtone();
   updateCallStatus('Connexion en cours…');
@@ -1799,7 +2683,7 @@ window.acceptCall = async function() {
 
   } catch(e) {
     console.error('[ANSWER] ❌ Erreur:', e.name, '-', e.message);
-    showToast('❌ Erreur de connexion: ' + e.message);
+    window.showToast('❌ Erreur de connexion: ' + e.message);
     window.endCall();
   }
 };
@@ -1822,7 +2706,66 @@ window.toggleMute = function() {
     btn.classList.toggle('muted', !track.enabled);
     btn.title = track.enabled ? 'Couper le micro' : 'Activer le micro';
   }
-  notify(track.enabled ? '🎤 Micro activé' : '🔇 Micro coupé', { type: 'info', duration: 1500, sound: false });
+  window.notify(track.enabled ? '🎤 Micro activé' : '🔇 Micro coupé', { type: 'info', duration: 1500, sound: false });
+};
+
+// ✅ NOUVEAU: Gestion du sélecteur d'appareil
+window.showDeviceSelector = async function() {
+  await enumerateAudioDevices();
+  const selector = document.getElementById('device-selector');
+  if(selector) {
+    // Remplir le sélecteur de microphones
+    const micSelect = document.getElementById('mic-select');
+    micSelect.innerHTML = '';
+    audioDevices.microphones.forEach(dev => {
+      const opt = document.createElement('option');
+      opt.value = dev.deviceId;
+      opt.textContent = dev.label || `Microphone ${dev.deviceId.substring(0, 5)}`;
+      if(dev.deviceId === selectedMicDeviceId) opt.selected = true;
+      micSelect.appendChild(opt);
+    });
+    
+    // Remplir le sélecteur de haut-parleurs
+    const speakerSelect = document.getElementById('speaker-select');
+    speakerSelect.innerHTML = '';
+    if(audioDevices.speakers.length > 0) {
+      audioDevices.speakers.forEach(dev => {
+        const opt = document.createElement('option');
+        opt.value = dev.deviceId;
+        opt.textContent = dev.label || `Haut-parleur ${dev.deviceId.substring(0, 5)}`;
+        if(dev.deviceId === selectedSpeakerDeviceId) opt.selected = true;
+        speakerSelect.appendChild(opt);
+      });
+    } else {
+      const opt = document.createElement('option');
+      opt.textContent = 'Non supporté sur ce navigateur';
+      opt.disabled = true;
+      speakerSelect.appendChild(opt);
+    }
+    
+    selector.classList.add('visible');
+  }
+};
+
+window.hideDeviceSelector = function() {
+  const selector = document.getElementById('device-selector');
+  if(selector) selector.classList.remove('visible');
+};
+
+window.changeMic = async function() {
+  const select = document.getElementById('mic-select');
+  const deviceId = select.value;
+  if(deviceId) {
+    await setMicDevice(deviceId);
+  }
+};
+
+window.changeSpeaker = async function() {
+  const select = document.getElementById('speaker-select');
+  const deviceId = select.value;
+  if(deviceId) {
+    await setSpeakerDevice(deviceId);
+  }
 };
 
 window.endCall = function() {
@@ -1897,7 +2840,7 @@ window.endCall = function() {
   if(overlay) overlay.classList.remove('visible');
 
   if(callDuration > 5) {
-    notify('📞 Appel terminé', { message: `Durée : ${formatDuration(callDuration)}`, type: 'info', duration: 3000, sound: false });
+    window.notify('📞 Appel terminé', { message: `Durée : ${formatDuration(callDuration)}`, type: 'info', duration: 3000, sound: false });
   }
 };
 
@@ -2008,10 +2951,19 @@ function createCallOverlay() {
       </div>
       <div class="call-controls">
         <button class="call-mute-btn" onclick="toggleMute()" title="Couper le micro">🎤</button>
+        <button class="call-device-btn" onclick="showDeviceSelector()" title="Changer d'appareil">🔊</button>
         <button class="call-end-btn" onclick="endCall()" title="Terminer">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         </button>
       </div>
+      <div class="call-device-selector" id="device-selector">
+        <div class="device-selector-title">🎤 Microphone</div>
+        <select class="device-select" id="mic-select" onchange="changeMic()"></select>
+        <div class="device-selector-title">🔊 Haut-parleur</div>
+        <select class="device-select" id="speaker-select" onchange="changeSpeaker()"></select>
+        <button class="device-close-btn" onclick="hideDeviceSelector()">Fermer</button>
+      </div>
+      <div class="device-selector-overlay" onclick="hideDeviceSelector()"></div>
     </div>
     <div class="call-history-panel" id="call-history-panel">
       <div class="call-history-header">
